@@ -14,3 +14,8 @@ node_modules/
 # IDE
 .vscode/
 .idea/
+
+# Python cache
+.pytest_cache/
+
+.env

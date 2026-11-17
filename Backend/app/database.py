@@ -2,7 +2,10 @@ from pymongo import MongoClient
 
 MONGO_URL = "mongodb://localhost:27017/"
 
-client = MongoClient(MONGO_URL)
+client = MongoClient(
+    MONGO_URL,
+    serverSelectionTimeoutMS = 5000
+    )
 
 db = client["shivrai_group"]
 
@@ -12,10 +15,11 @@ print("MongoDB connection configured!")
 
 try:
     client.admin.command("ping")
-    print("Successss")
+    print("MongoDB connected successfully!")
 
 except Exception as e:
-    print("")    
+    print(f"MongoDB connection failed: {e}")
+    raise
 
 projects_collection = db["projects"]
 contacts_collection = db["contacts"]

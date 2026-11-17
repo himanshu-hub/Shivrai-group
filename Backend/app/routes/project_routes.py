@@ -1,8 +1,12 @@
-from fastapi import APIRouter
+from fastapi import HTTPException, APIRouter, Query, Depends
 from app.database import projects_collection
-from app.Schema.project import ProjectSchema
+from app.Schema.project import ProjectSchema, ProjectCategory, ProjectStatus
 from bson import ObjectId
-from fastapi import HTTPException, APIRouter, Query
+from pymongo.errors import PyMongoError
+import re
+from app.auth import get_current_admin
+
+
 
 router = APIRouter(
     prefix="/projects",
@@ -13,21 +17,37 @@ router = APIRouter(
 @router.get("/")
 async def get_projects(
     status: str = None,
-    search: str = None,
+    search: str  | None = Query(default=None, min_length=1, max_length=100),
     category: str= None,
     page: int = Query(1, ge=1),
     limit: int = Query(10, ge=1, le=100),
     sort_by: str = "newest"
 ):
+    if status and status not in  [s.value for s in ProjectStatus]:
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid project status"
+        )
+
+    if category and category not in  [c.value for c in ProjectCategory]:
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid project category"
+        )
+    
     query = {}
 
     if search:
-        query["$or"]= [
-            {"name":{"$regex": search, "$options":"i"}},
-            {"location":{"$regex": search, "$options":"i"}},
-            {"description":{"$regex": search, "$options":"i"}},
-            {"category":{"$regex": search, "$options":"i"}}
-        ]
+        search = search.strip()
+
+        if search:
+            search = re.escape(search)
+            query["$or"]= [
+                {"name":{"$regex": search, "$options":"i"}},
+                {"location":{"$regex": search, "$options":"i"}},
+                {"description":{"$regex": search, "$options":"i"}},
+                {"category":{"$regex": search, "$options":"i"}}
+            ]
 
     if status:
         query["status"] = status
@@ -54,105 +74,152 @@ async def get_projects(
             status_code=400,
             detail="invalid sorting option"
         )
+    try:
+        projects = list(
+            projects_collection.find(query)
+            .sort(sort_option)
+            .skip(skip)
+            .limit(limit)
+        )
 
-    projects = list(
-        projects_collection.find(query)
-        .sort(sort_option)
-        .skip(skip)
-        .limit(limit)
-    )
+        for project in projects:
+            project["id"] = str(project.pop("_id"))
 
-    for project in projects:
-        project["id"] = str(project.pop("_id"))
+        total_projects = projects_collection.count_documents(query)
 
-    total_projects = projects_collection.count_documents(query)
-
-    return {
-        "total_projects": total_projects,
-        "current_page" : page,
-        "total_pages" : (total_projects + limit - 1) // limit,
-        "projects": projects
-    }        
-    # projects = list(projects_collection.find({},{"_id": 0}))
-    # return projects
-
+        return {
+            "total_projects": total_projects,
+            "current_page" : page,  
+            "total_pages" : (total_projects + limit - 1) // limit,
+            "projects": projects
+        }        
+    except PyMongoError:
+        raise HTTPException(
+            status_code=503,
+            detail= "Database temporarily unavailable. Please try later"
+        )
 
 @router.post("/")
-async def create_project(project: ProjectSchema):
+async def create_project(
+    project: ProjectSchema,
+    current_admin: str = Depends(get_current_admin)
+):
     try:
-            project_data = project.model_dump()
-            result = projects_collection.insert_one(project_data)
+        project_data = project.model_dump()
+        result = projects_collection.insert_one(project_data)
 
-        #project_data = project.dict()
-        #result = projects_collection.insert_one(project_data)
-
-            return {
+        return {
             "message":"Project Created Successfully",
-            "ID": str(result.inserted_id)
+            "id": str(result.inserted_id)
         }
-    except Exception as e:
+    except PyMongoError:
         raise HTTPException(
-                status_code=500,
-                detail= "Failed to create project"
+                status_code=503,
+                detail= "Database temporarily unavailable. Please try again later."
             )
-
 
 @router.get("/{project_id}")
 async def get_project(project_id: str):
+    
     if not ObjectId.is_valid(project_id):
         raise HTTPException(
             status_code=400,
             detail="Invalid project ID"
         )
 
-
-    project = projects_collection.find_one(
-        {"_id": ObjectId(project_id)},
-        {"_id": 0}
-    )
-
-    if not project:
-        raise HTTPException(
-            status_code=404,
-            detail="Project not found"
+    try:
+        project = projects_collection.find_one(
+            {"_id": ObjectId(project_id)},
         )
-    return project
+
+        if not project:
+            raise HTTPException(
+                status_code=404,
+                detail="Project not found"
+            )
+
+        project["id"] = str(project.pop("_id"))
+
+        return project
+
+    except HTTPException:
+        raise
+
+    except PyMongoError:
+        raise HTTPException(
+            status_code=503,
+            detail = "Database temporarily unavailable. Please Try Again Later"
+        )
 
 @router.delete("/{project_id}")
-async def delete_project(project_id: str):
+async def delete_project(
+    project_id: str,
+    current_admin: str = Depends(get_current_admin)
+):
+
     if not ObjectId.is_valid(project_id):
         raise HTTPException(
             status_code=400,
             detail="Invalid project ID"
         )
-    result = projects_collection.delete_one(
-        {"_id":ObjectId(project_id)}
-    )
-    if result.deleted_count ==0:
-        raise HTTPException(
-            status_code=404,
-            detail="Project not found"
+    
+    try:    
+        result = projects_collection.delete_one(
+            {"_id":ObjectId(project_id)}
         )
-    return{
-        "message": "project deleted successfully"
-    }
+
+        if result.deleted_count ==0:
+            raise HTTPException(
+                status_code=404,
+                detail="Project not found"
+            )
+        
+        return{
+            "message": "project deleted successfully"
+        }
+
+    except HTTPException:
+        raise
+
+    except PyMongoError:
+        raise HTTPException(
+            status_code=503,
+            detail="Database temporarily unavailable. Please try again later."
+        )
+
 @router.put("/{project_id}")
-async def update_project(project_id:str, project: ProjectSchema):
+async def update_project(
+    project_id:str,
+    project: ProjectSchema,
+    current_admin: str = Depends(get_current_admin)
+):
+
     if not ObjectId.is_valid(project_id):
         raise HTTPException(
             status_code=400,
             detail="Invalid Project Id"
         )
-    result = projects_collection.update_one(
-        {"_id": ObjectId(project_id)},
-        {"$set":project.dict()}
-    )
 
-    if result.matched_count == 0:
-        raise HTTPException(
-            status_code=404,
-            detail="Project not Found"
+    try:
+        result = projects_collection.update_one(
+            {"_id": ObjectId(project_id)},
+            {"$set":project.model_dump()}
         )
-    return{
-        "message": "Project Updated Successfully"
-    }
+
+        if result.matched_count == 0:
+            raise HTTPException(
+                status_code=404,
+                detail="Project not Found"
+            )
+        return{
+            "message": "Project Updated Successfully"
+        }
+
+    except HTTPException:
+        raise
+
+    except PyMongoError:
+        raise HTTPException(
+            status_code=503,
+            detail= "Database temporarily unavailable. Please try later."
+        )

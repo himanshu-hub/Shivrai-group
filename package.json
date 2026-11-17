@@ -1,0 +1,8 @@
+{
+  "scripts": {
+    "sass": "sass Frontend/styles/main.scss Frontend/styles/main.css --watch"
+  },
+  "devDependencies": {
+    "sass": "^1.108.2"
+  }
+}

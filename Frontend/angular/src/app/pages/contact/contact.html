@@ -1,0 +1,62 @@
+
+<section class="contact-page">
+  <h1>Contact Shivrai Group</h1>
+  <p>Have an enquiry? Get in touch with us.</p>
+
+  <form #contactForm="ngForm" (ngSubmit)="submitForm()">
+
+    <input
+      type="text"
+      name="name"
+      placeholder="Full Name"
+      [(ngModel)]="form.name"
+      minlength="2"
+      required
+    />
+
+    <input
+      type="email"
+      name="email"
+      placeholder="Email Address"
+      [(ngModel)]="form.email"
+      email
+      required
+    />
+
+    <input
+      type="tel"
+      name="phone"
+      placeholder="Phone Number"
+      [(ngModel)]="form.phone"
+      pattern="^\+?[0-9]{10,15}$"
+      required
+    />
+
+    <input
+      type="text"
+      name="subject"
+      placeholder="Subject (Optional)"
+      [(ngModel)]="form.subject"
+    />
+
+    <textarea
+      name="message"
+      placeholder="Your Message"
+      [(ngModel)]="form.message"
+      required
+    ></textarea>
+
+    <button type="submit" [disabled]="contactForm.invalid || loading">
+      {{ loading ? 'Submitting...' : 'Submit Enquiry' }}
+    </button>
+
+    @if (success) {
+      <p class="success">{{ success }}</p>
+    }
+
+    @if (error) {
+      <p class="error">{{ error }}</p>
+    }
+
+  </form>
+</section>

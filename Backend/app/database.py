@@ -1,4 +1,5 @@
 from pymongo import MongoClient
+from pymongo.errors import PyMongoError
 
 MONGO_URL = "mongodb://localhost:27017/"
 
@@ -17,7 +18,7 @@ try:
     client.admin.command("ping")
     print("MongoDB connected successfully!")
 
-except Exception as e:
+except PyMongoError as e:
     print(f"MongoDB connection failed: {e}")
     raise
 

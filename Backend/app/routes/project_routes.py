@@ -15,7 +15,7 @@ router = APIRouter(
 
 
 @router.get("/")
-async def get_projects(
+def get_projects(
     status: str = None,
     search: str  | None = Query(default=None, min_length=1, max_length=100),
     category: str= None,
@@ -100,7 +100,7 @@ async def get_projects(
         )
 
 @router.post("/")
-async def create_project(
+def create_project(
     project: ProjectSchema,
     current_admin: str = Depends(get_current_admin)
 ):
@@ -119,7 +119,7 @@ async def create_project(
             )
 
 @router.get("/{project_id}")
-async def get_project(project_id: str):
+def get_project(project_id: str):
     
     if not ObjectId.is_valid(project_id):
         raise HTTPException(
@@ -152,7 +152,7 @@ async def get_project(project_id: str):
         )
 
 @router.delete("/{project_id}")
-async def delete_project(
+def delete_project(
     project_id: str,
     current_admin: str = Depends(get_current_admin)
 ):
@@ -188,7 +188,7 @@ async def delete_project(
         )
 
 @router.put("/{project_id}")
-async def update_project(
+def update_project(
     project_id:str,
     project: ProjectSchema,
     current_admin: str = Depends(get_current_admin)

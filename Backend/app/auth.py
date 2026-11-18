@@ -16,19 +16,8 @@ SECRET_KEY = os.getenv("JWT_SECRET_KEY")
 ADMIN_USERNAME = os.getenv("ADMIN_USERNAME")
 ADMIN_PASSWORD_HASH = os.getenv("ADMIN_PASSWORD_HASH")
 
-
-#lYYdgzosenS9Nao9qqNSVz6_MjWfoAWtIo3be5-UsqrymadoI47Up1A7BW4Tv78sckKs51hu3ecOF_4YXkQJrQ
-#$env:JWT_SECRET_KEY="lYYdgzosenS9Nao9qqNSVz6_MjWfoAWtIo3be5-UsqrymadoI47Up1A7BW4Tv78sckKs51hu3ecOF_4YXkQJrQ"
-#$env:ADMIN_USERNAME="admin"
-#$argon2id$v=19$m=65536,t=3,p=4$CJiE/5Z93ew9pIwsHzvHtg$Myh8fJJoP/O9foUasqD9Js7MIeJwEu9q9gwKIfuyiNM
-#$env:ADMIN_PASSWORD_HASH="$argon2id$v=19$m=65536,t=3,p=4$CJiE/5Z93ew9pIwsHzvHtg$Myh8fJJoP/O9foUasqD9Js7MIeJwEu9q9gwKIfuyiNM"
-
-
-#m=65536,t=3,p=4$EJZgE2/7i0ywGZWutecBvA$VVebJw686yAgjYm9aBj9AhRMbrHjIpRDi19ywPX+6gw
-#$env:ADMIN_PASSWORD_HASH='$argon2id$v=19$m=65536,t=3,p=4$EJZgE2/7i0ywGZWutecBvA$VVebJw686yAgjYm9aBj9AhRMbrHjIpRDi19ywPX+6gw'
-
-
-
+if not all([SECRET_KEY, ADMIN_USERNAME, ADMIN_PASSWORD_HASH]):
+    raise RuntimeError("Missing qeruired authentication enviornment variables")
 
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
@@ -83,7 +72,7 @@ async def get_current_admin(token: str = Depends(oauth2_scheme)):
         raise HTTPException(
             status_code=401,
             detail="Invalid authentication credentials",
-            headers={"WWW-Authentication":"Bearer"}
+            headers={"WWW-Authenticate":"Bearer"}
         )
 
     return username 

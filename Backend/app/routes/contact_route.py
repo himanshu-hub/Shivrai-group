@@ -15,7 +15,7 @@ router = APIRouter(
 )
 
 @router.post("/")
-async def submit_contact(contact: ContactSchema):
+def submit_contact(contact: ContactSchema):
     try:    
         contact_data = contact.model_dump()
         contact_data["status"] = "Pending"
@@ -39,7 +39,7 @@ async def submit_contact(contact: ContactSchema):
         )
 
 @router.get("/{enquiry_id}")
-async def get_enquiry(
+def get_enquiry(
     enquiry_id: str,
     current_admin: str = Depends(get_current_admin)
 ):
@@ -75,7 +75,7 @@ async def get_enquiry(
         )
 
 @router.patch("/{enquiry_id}/status")
-async def update_enquiry_status(
+def update_enquiry_status(
     enquiry_id: str, 
     status: str,
     current_admin: str = Depends(get_current_admin)
@@ -120,7 +120,7 @@ async def update_enquiry_status(
         )
 
 @router.delete("/{enquiry_id}")
-async def delete_enquiry(
+def delete_enquiry(
     enquiry_id: str,
     current_admin: str = Depends(get_current_admin)
 ):
@@ -154,9 +154,11 @@ async def delete_enquiry(
         )    
 
 @router.get("/")
-async def get_enquiries(
+def get_enquiries(
     search: str | None = Query(default=None, min_length=1, max_length=100),
     status: str | None = None,
+    page: int = Query(1, ge=1),
+    limit: int = Query(10, ge=1, le=100) ,
     current_admin: str = Depends(get_current_admin)
 ):
     if search:
@@ -199,12 +201,25 @@ async def get_enquiries(
         query = {}
 
     try:
-        enquiries = list(contacts_collection.find(query))
+        skip = (page - 1)* limit
+
+        enquiries = list(
+            contacts_collection.find(query)
+            .sort("_id", -1)
+            .skip(skip)
+            .limit(limit)
+        )
+        total_enquiries = contacts_collection.count_documents(query)
 
         for enquiry in enquiries:
             enquiry["id"] = str(enquiry.pop("_id"))
 
-        return enquiries
+        return {
+            "total_enquiries": total_enquiries,
+            "current_page": page,
+            "total_pages":(total_enquiries + limit - 1)//limit,
+            "enquiries": enquiries
+        }
 
     except PyMongoError:
         raise HTTPException(

@@ -26,7 +26,8 @@ async def admin_logic(
     ):
         raise HTTPException(
             status_code=401,
-            detail="Invalid username or password"
+            detail="Invalid username or password",
+            headers={"WWW-Authenticate": "Bearer"}
         )
     access_token = create_access_token(
         {"sub": credentials.username}

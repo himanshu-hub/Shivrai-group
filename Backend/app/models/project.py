@@ -1,16 +1,28 @@
-from datetime import datetime
+
+from datetime import datetime, timezone
 
 
 def project_model(
     name,
     status,
     location,
-    description
+    description,
+    category=None,
+    image=None,
+    gallery=None
 ):
-    return{
+    return {
         "name": name,
         "status": status,
+        "category": category,
         "location": location,
         "description": description,
-        "created_at": datetime.utcnow()
+
+        # Main cover image URL
+        "image": image,
+
+        # Additional project image URLs
+        "gallery": gallery if gallery is not None else [],
+
+        "created_at": datetime.now(timezone.utc)
     }

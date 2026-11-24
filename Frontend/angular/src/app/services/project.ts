@@ -9,7 +9,14 @@ export interface Project {
   category?: string;
   location: string;
   description: string;
+
+  // Main project cover image
   image?: string | null;
+
+  // Additional project gallery images
+  gallery?: string[];
+
+  // Visitor analytics
   total_views?: number;
 }
 
@@ -24,24 +31,12 @@ export interface ProjectResponse {
   providedIn: 'root'
 })
 export class ProjectService {
-  private http = inject(HttpClient);
-  private apiUrl = 'http://127.0.0.1:8000/projects/';
-    getMostViewedProjects(limit = 5) {
-    return this.http.get<ProjectResponse>(this.apiUrl, {
-      params: {
-        page: 1,
-        limit,
-        sort_by: 'most_viewed'
-      }
-    });
-  }
 
-  trackProjectView(id: string) {
-    return this.http.post<void>(
-      `http://127.0.0.1:8000/projects/${id}/view`,
-      null
-    );
-  }
+  private http = inject(HttpClient);
+
+  private apiUrl = 'http://127.0.0.1:8000/projects/';
+
+  // GET ALL PROJECTS WITH FILTERS AND PAGINATION
 
   getProjects(
     status?: string,
@@ -55,15 +50,53 @@ export class ProjectService {
       limit
     };
 
-    if (status) params['status'] = status;
-    if (category) params['category'] = category;
-    if (search?.trim()) params['search'] = search.trim();
+    if (status) {
+      params['status'] = status;
+    }
 
-    return this.http.get<ProjectResponse>(this.apiUrl, { params });
+    if (category) {
+      params['category'] = category;
+    }
+
+    if (search?.trim()) {
+      params['search'] = search.trim();
+    }
+
+    return this.http.get<ProjectResponse>(
+      this.apiUrl,
+      { params }
+    );
   }
 
-  // Fetch one project using its MongoDB ID
+  // GET SINGLE PROJECT DETAILS AND GALLERY
+
   getProjectById(id: string) {
-    return this.http.get<Project>(`${this.apiUrl}${id}`);
+    return this.http.get<Project>(
+      `${this.apiUrl}${id}`
+    );
+  }
+
+  // GET MOST VIEWED PROJECTS
+
+  getMostViewedProjects(limit = 5) {
+    return this.http.get<ProjectResponse>(
+      this.apiUrl,
+      {
+        params: {
+          page: 1,
+          limit,
+          sort_by: 'most_viewed'
+        }
+      }
+    );
+  }
+
+  // RECORD PROJECT PAGE VIEW
+
+  trackProjectView(id: string) {
+    return this.http.post<void>(
+      `${this.apiUrl}${id}/view`,
+      null
+    );
   }
 }

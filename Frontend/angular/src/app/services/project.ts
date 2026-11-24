@@ -10,6 +10,7 @@ export interface Project {
   location: string;
   description: string;
   image?: string | null;
+  total_views?: number;
 }
 
 export interface ProjectResponse {
@@ -25,6 +26,22 @@ export interface ProjectResponse {
 export class ProjectService {
   private http = inject(HttpClient);
   private apiUrl = 'http://127.0.0.1:8000/projects/';
+    getMostViewedProjects(limit = 5) {
+    return this.http.get<ProjectResponse>(this.apiUrl, {
+      params: {
+        page: 1,
+        limit,
+        sort_by: 'most_viewed'
+      }
+    });
+  }
+
+  trackProjectView(id: string) {
+    return this.http.post<void>(
+      `http://127.0.0.1:8000/projects/${id}/view`,
+      null
+    );
+  }
 
   getProjects(
     status?: string,

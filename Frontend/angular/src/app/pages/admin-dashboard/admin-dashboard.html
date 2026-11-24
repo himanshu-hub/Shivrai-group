@@ -1,0 +1,305 @@
+
+<section class="admin-dashboard">
+
+  <!-- DASHBOARD HEADER -->
+  <header class="dashboard-header">
+    <div>
+      <span class="eyebrow">SHIVRAI GROUP / ADMIN PANEL</span>
+      <h1>Dashboard Overview</h1>
+      <p>Monitor your projects and customer enquiries.</p>
+    </div>
+
+    <div class="dashboard-header-actions">
+      <a routerLink="/admin/projects" class="header-action">
+        Manage Projects
+        <span aria-hidden="true">→</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- ERROR MESSAGE -->
+  @if (error) {
+    <div class="dashboard-alert" role="alert">
+      <span>{{ error }}</span>
+      <button type="button" (click)="loadDashboard()">
+        Retry
+      </button>
+    </div>
+  }
+
+  <!-- PROJECT STATISTICS -->
+  <div class="stats-grid">
+
+    <article class="stat-card">
+      <div class="stat-top">
+        <span>Total Projects</span>
+        <span class="stat-icon" aria-hidden="true">▦</span>
+      </div>
+      <h2>{{ loading ? '...' : (totalProjects ?? '—') }}</h2>
+      <p>All registered developments</p>
+    </article>
+
+    <article class="stat-card">
+      <div class="stat-top">
+        <span>Ongoing Projects</span>
+        <span class="stat-icon" aria-hidden="true">↗</span>
+      </div>
+      <h2>{{ loading ? '...' : (ongoingProjects ?? '—') }}</h2>
+      <p>Currently active developments</p>
+    </article>
+
+    <article class="stat-card">
+      <div class="stat-top">
+        <span>Upcoming Projects</span>
+        <span class="stat-icon" aria-hidden="true">◷</span>
+      </div>
+      <h2>{{ loading ? '...' : (upcomingProjects ?? '—') }}</h2>
+      <p>Planned developments</p>
+    </article>
+
+    <article class="stat-card">
+      <div class="stat-top">
+        <span>Completed Projects</span>
+        <span class="stat-icon" aria-hidden="true">✓</span>
+      </div>
+      <h2>{{ loading ? '...' : (completedProjects ?? '—') }}</h2>
+      <p>Successfully completed</p>
+    </article>
+
+  </div>
+
+  <!-- ENQUIRY STATISTICS -->
+  <div class="enquiry-stats">
+
+    <article class="enquiry-stat-card featured">
+      <div>
+        <span class="stat-label">Total Customer Enquiries</span>
+        <h2>{{ loading ? '...' : (totalEnquiries ?? '—') }}</h2>
+        <p>All enquiries received through the website</p>
+      </div>
+
+      <a routerLink="/admin/enquiries">
+        View Enquiries →
+      </a>
+    </article>
+
+    <article class="enquiry-stat-card">
+      <div>
+        <span class="stat-label">Pending Enquiries</span>
+        <h2>{{ loading ? '...' : (pendingEnquiries ?? '—') }}</h2>
+        <p>Customer enquiries requiring attention</p>
+      </div>
+
+      <a routerLink="/admin/enquiries">
+        Manage Enquiries →
+      </a>
+    </article>
+
+  </div>
+
+  <!-- MAIN DASHBOARD CONTENT -->
+  <div class="dashboard-content">
+
+    <!-- RECENT ENQUIRIES -->
+    <section class="dashboard-panel recent-enquiries">
+
+      <div class="panel-header">
+        <div>
+          <h2>Recent Enquiries</h2>
+          <p>Latest customer messages received</p>
+        </div>
+
+        <a routerLink="/admin/enquiries">
+          View All →
+        </a>
+      </div>
+
+      @if (loading) {
+        <div class="empty-state" role="status">
+          Loading recent enquiries...
+        </div>
+      } @else {
+
+        <div class="enquiry-list">
+
+          @for (enquiry of recentEnquiries; track enquiry.id) {
+            <article class="enquiry-row">
+
+              <div class="enquiry-avatar" aria-hidden="true">
+                {{ enquiry.name.charAt(0).toUpperCase() }}
+              </div>
+
+              <div class="enquiry-info">
+
+                <div class="enquiry-name-row">
+                  <h3>{{ enquiry.name }}</h3>
+
+                  <span
+                    class="status-badge"
+                    [class.pending]="enquiry.status === 'Pending'"
+                    [class.contacted]="enquiry.status === 'Contacted'"
+                    [class.resolved]="enquiry.status === 'Resolved'"
+                  >
+                    {{ enquiry.status }}
+                  </span>
+                </div>
+
+                <p class="enquiry-subject">
+                  {{ enquiry.subject || 'General Enquiry' }}
+                </p>
+
+                <p class="enquiry-message">
+                  {{ enquiry.message }}
+                </p>
+
+                <div class="enquiry-meta">
+                  <span>{{ enquiry.email }}</span>
+                  <span>
+                    {{ enquiry.created_at | date:'dd MMM yyyy' }}
+                  </span>
+                </div>
+
+              </div>
+            </article>
+          } @empty {
+            <div class="empty-state">
+              No recent enquiries found.
+            </div>
+          }
+
+        </div>
+      }
+
+    </section>
+
+    <!-- RIGHT SIDEBAR -->
+    <aside class="dashboard-sidebar">
+
+      <!-- QUICK ACTIONS -->
+      <section class="dashboard-panel quick-actions">
+
+        <div class="panel-header">
+          <div>
+            <h2>Quick Actions</h2>
+            <p>Manage your website</p>
+          </div>
+        </div>
+
+        <a routerLink="/admin/projects" class="action-item">
+          <span class="action-icon" aria-hidden="true">▦</span>
+
+          <span class="action-text">
+            <strong>Manage Projects</strong>
+            <small>Add, edit and remove projects</small>
+          </span>
+
+          <span class="action-arrow" aria-hidden="true">→</span>
+        </a>
+
+        <a routerLink="/admin/enquiries" class="action-item">
+          <span class="action-icon" aria-hidden="true">✉</span>
+
+          <span class="action-text">
+            <strong>Customer Enquiries</strong>
+            <small>View and update enquiries</small>
+          </span>
+
+          <span class="action-arrow" aria-hidden="true">→</span>
+        </a>
+
+        <a routerLink="/" class="action-item">
+          <span class="action-icon" aria-hidden="true">⌂</span>
+
+          <span class="action-text">
+            <strong>Visit Website</strong>
+            <small>View your public website</small>
+          </span>
+
+          <span class="action-arrow" aria-hidden="true">→</span>
+        </a>
+
+      </section>
+
+      <!-- MOST VIEWED PROJECTS -->
+      <section class="dashboard-panel analytics-panel">
+
+        <div class="panel-header">
+          <div>
+            <h2>Most Viewed Projects</h2>
+            <p>Ranked by recorded project page visits</p>
+          </div>
+        </div>
+
+        @if (loading) {
+          <div class="empty-state">
+            Loading project analytics...
+          </div>
+        } @else {
+
+          <div class="popular-projects">
+
+            @for (
+              project of mostViewedProjects;
+              track project.id;
+              let i = $index
+            ) {
+
+              <div class="popular-project">
+
+                <div class="popular-project-info">
+                  <span class="project-rank">
+                    {{ i + 1 }}
+                  </span>
+
+                  <div>
+                    <strong>{{ project.name }}</strong>
+                    <small>{{ project.location }}</small>
+                  </div>
+                </div>
+
+                <div class="project-views">
+                  <strong>{{ project.total_views ?? 0 }}</strong>
+                  <small>views</small>
+                </div>
+
+                <div
+                  class="popularity-bar"
+                  role="progressbar"
+                  [attr.aria-label]="'Relative popularity of ' + project.name"
+                  [attr.aria-valuenow]="project.total_views ?? 0"
+                  [attr.aria-valuemin]="0"
+                  [attr.aria-valuemax]="mostViewedProjects[0].total_views || 1"
+                >
+                  <div
+                    class="popularity-fill"
+                    [style.width.%]="
+                      ((project.total_views ?? 0) /
+                      (mostViewedProjects[0].total_views || 1)) * 100
+                    "
+                  ></div>
+                </div>
+
+              </div>
+
+            } @empty {
+              <div class="empty-state">
+                No project analytics available yet.
+              </div>
+            }
+
+          </div>
+        }
+
+      </section>
+
+    </aside>
+
+  </div>
+
+  <!-- DASHBOARD FOOTER -->
+  <footer class="dashboard-footer">
+    <span>© Shivrai Group — Administration</span>
+    <span>Project & Enquiry Management</span>
+  </footer>
+
+</section>

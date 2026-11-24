@@ -1,11 +1,11 @@
-from fastapi import HTTPException, APIRouter, Query, Depends
+from fastapi import HTTPException, APIRouter, Query, Depends, Response
 from app.database import projects_collection
 from app.Schema.project import ProjectSchema, ProjectCategory, ProjectStatus
 from bson import ObjectId
 from pymongo.errors import PyMongoError
 import re
 from app.auth import get_current_admin
-
+from datetime import datetime, timezone
 
 
 router = APIRouter(
@@ -14,27 +14,32 @@ router = APIRouter(
 )
 
 
+
 @router.get("/")
 def get_projects(
     status: str = None,
-    search: str  | None = Query(default=None, min_length=1, max_length=100),
-    category: str= None,
+    search: str | None = Query(
+        default=None,
+        min_length=1,
+        max_length=100
+    ),
+    category: str = None,
     page: int = Query(1, ge=1),
     limit: int = Query(10, ge=1, le=100),
     sort_by: str = "newest"
 ):
-    if status and status not in  [s.value for s in ProjectStatus]:
+    if status and status not in [s.value for s in ProjectStatus]:
         raise HTTPException(
             status_code=400,
             detail="Invalid project status"
         )
 
-    if category and category not in  [c.value for c in ProjectCategory]:
+    if category and category not in [c.value for c in ProjectCategory]:
         raise HTTPException(
             status_code=400,
             detail="Invalid project category"
         )
-    
+
     query = {}
 
     if search:
@@ -42,11 +47,12 @@ def get_projects(
 
         if search:
             search = re.escape(search)
-            query["$or"]= [
-                {"name":{"$regex": search, "$options":"i"}},
-                {"location":{"$regex": search, "$options":"i"}},
-                {"description":{"$regex": search, "$options":"i"}},
-                {"category":{"$regex": search, "$options":"i"}}
+
+            query["$or"] = [
+                {"name": {"$regex": search, "$options": "i"}},
+                {"location": {"$regex": search, "$options": "i"}},
+                {"description": {"$regex": search, "$options": "i"}},
+                {"category": {"$regex": search, "$options": "i"}}
             ]
 
     if status:
@@ -55,25 +61,32 @@ def get_projects(
     if category:
         query["category"] = category
 
-    skip = (page - 1) *limit    
+    skip = (page - 1) * limit
 
     if sort_by == "newest":
-        sort_option =[("_id", -1)]
+        sort_option = [("_id", -1)]
 
     elif sort_by == "oldest":
         sort_option = [("_id", 1)]
 
     elif sort_by == "name_asc":
-        sort_option = [("name", 1)]
+        sort_option = [("name", 1), ("_id", -1)]
 
     elif sort_by == "name_desc":
-        sort_option = [("name", -1)]    
+        sort_option = [("name", -1), ("_id", -1)]
+
+    elif sort_by == "most_viewed":
+        sort_option = [
+            ("total_views", -1),
+            ("_id", -1)
+        ]
 
     else:
         raise HTTPException(
             status_code=400,
-            detail="invalid sorting option"
+            detail="Invalid sorting option"
         )
+
     try:
         projects = list(
             projects_collection.find(query)
@@ -85,18 +98,62 @@ def get_projects(
         for project in projects:
             project["id"] = str(project.pop("_id"))
 
+            # Older projects may not have views yet.
+            project["total_views"] = project.get("total_views", 0)
+
         total_projects = projects_collection.count_documents(query)
 
         return {
             "total_projects": total_projects,
-            "current_page" : page,  
-            "total_pages" : (total_projects + limit - 1) // limit,
+            "current_page": page,
+            "total_pages": (total_projects + limit - 1) // limit,
             "projects": projects
-        }        
+        }
+
     except PyMongoError:
         raise HTTPException(
             status_code=503,
-            detail= "Database temporarily unavailable. Please try later"
+            detail="Database temporarily unavailable. Please try later"
+        )
+
+
+@router.post("/{project_id}/view", status_code=204)
+def track_project_view(project_id: str):
+
+    if not ObjectId.is_valid(project_id):
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid project ID"
+        )
+
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+
+    try:
+        result = projects_collection.update_one(
+            {"_id": ObjectId(project_id)},
+            {
+                "$inc": {
+                    "total_views": 1,
+                    f"daily_views.{today}": 1
+                }
+            }
+        )
+
+        if result.matched_count == 0:
+            raise HTTPException(
+                status_code=404,
+                detail="Project not found"
+            )
+
+        return Response(status_code=204)
+
+    except HTTPException:
+        raise
+
+    except PyMongoError:
+        raise HTTPException(
+            status_code=503,
+            detail="Unable to record project view"
         )
 
 @router.post("/")

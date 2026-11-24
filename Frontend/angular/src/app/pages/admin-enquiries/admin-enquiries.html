@@ -1,0 +1,182 @@
+
+<section class="admin-enquiries">
+
+  <div class="page-header">
+    <h1>Contact Enquiries</h1>
+    <p>Manage customer enquiries received through your website.</p>
+
+    <a href="/admin/dashboard">
+      ← Back to Dashboard
+    </a>
+  </div>
+
+  @if (error) {
+    <p class="error" role="alert">{{ error }}</p>
+  }
+
+  @if (statusMessage) {
+    <p class="success" role="status">{{ statusMessage }}</p>
+  }
+
+  @if (loading) {
+    <p>Loading enquiries...</p>
+  } @else {
+
+    <div class="enquiry-summary">
+      <h2>Total Enquiries: {{ totalEnquiries }}</h2>
+    </div>
+
+
+  <!-- SEARCH AND FILTERS -->
+  <div class="enquiry-filters">
+
+    <input
+      type="search"
+      placeholder="Search by name, email or phone..."
+      [(ngModel)]="searchQuery"
+      (keyup.enter)="applyFilters()"
+      aria-label="Search enquiries"
+    />
+
+    <select
+      [(ngModel)]="filterStatus"
+      (change)="applyFilters()"
+      aria-label="Filter by enquiry status"
+    >
+      <option value="">All Statuses</option>
+      <option value="Pending">Pending</option>
+      <option value="Contacted">Contacted</option>
+      <option value="Resolved">Resolved</option>
+    </select>
+
+    <button
+      type="button"
+      class="search-btn"
+      (click)="applyFilters()"
+    >
+      Search
+    </button>
+
+    <button
+      type="button"
+      class="clear-btn"
+      (click)="clearFilters()"
+    >
+      Clear Filters
+    </button>
+
+  </div>
+
+
+    <div class="enquiry-list">
+
+      @for (enquiry of enquiries; track enquiry.id) {
+
+        <article class="enquiry-card">
+
+          <!-- TOP: STATUS -->
+          <div class="enquiry-header">
+            <div class="status-control">
+
+              <span class="status">
+                {{ enquiry.status }}
+              </span>
+
+              <select
+                #statusSelect
+                [value]="enquiry.status"
+                [disabled]="updatingId !== null || deletingId !== null"
+                (change)="updateEnquiryStatus(enquiry, statusSelect.value)"
+                aria-label="Update enquiry status"
+              >
+                <option value="Pending">Pending</option>
+                <option value="Contacted">Contacted</option>
+                <option value="Resolved">Resolved</option>
+              </select>
+
+            </div>
+          </div>
+
+          <!-- MIDDLE: CUSTOMER DETAILS -->
+          <div class="enquiry-body">
+
+            <p>
+              <strong>Name:</strong> {{ enquiry.name }}
+            </p>
+
+            <p>
+              <strong>Email:</strong> {{ enquiry.email }}
+            </p>
+
+            <p>
+              <strong>Phone:</strong> {{ enquiry.phone }}
+            </p>
+
+            <p>
+              <strong>Subject:</strong> {{ enquiry.subject || '—' }}
+            </p>
+
+            <div class="message">
+              <strong>Message</strong>
+              <p>{{ enquiry.message }}</p>
+            </div>
+
+          </div>
+
+          <!-- BOTTOM: DATE + DELETE -->
+          <div class="enquiry-footer">
+
+            <small>
+              Submitted:
+              {{ enquiry.created_at | date:'dd MMM yyyy, hh:mm a' }}
+            </small>
+
+            <div class="enquiry-actions">
+              <button
+                type="button"
+                class="delete-btn"
+                (click)="deleteEnquiry(enquiry)"
+                [disabled]="deletingId !== null || updatingId !== null"
+              >
+                {{ deletingId === enquiry.id ? 'Deleting...' : 'Delete Enquiry' }}
+              </button>
+            </div>
+
+          </div>
+
+        </article>
+
+      } @empty {
+        <p>No enquiries found.</p>
+      }
+
+    </div>
+
+    <!-- PAGINATION -->
+    <div class="pagination">
+
+      <button
+        type="button"
+        (click)="previousPage()"
+        [disabled]="currentPage <= 1 || loading"
+      >
+        Previous
+      </button>
+
+      <span>
+        Page {{ currentPage }} of {{ totalPages || 1 }}
+      </span>
+
+      <button
+        type="button"
+        (click)="nextPage()"
+        [disabled]="currentPage >= totalPages || loading"
+      >
+        Next
+      </button>
+
+    </div>
+
+  }
+
+</section>

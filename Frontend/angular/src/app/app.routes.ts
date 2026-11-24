@@ -1,5 +1,6 @@
 
 import { Routes } from '@angular/router';
+import { authGuard } from './guards/auth-guard';
 
 export const routes: Routes = [
   {
@@ -35,5 +36,34 @@ export const routes: Routes = [
   {
     path: 'contact',
     loadComponent: () => import('./pages/contact/contact').then(m => m.Contact)
-  }
+  },
+  {
+  path: 'admin/login',
+  loadComponent: () =>
+    import('./pages/admin-login/admin-login')
+      .then(m => m.AdminLogin)
+  },
+  {
+  path: 'admin/dashboard',
+  canActivate: [authGuard],
+  loadComponent: () =>
+    import('./pages/admin-dashboard/admin-dashboard')
+      .then(m => m.AdminDashboard)
+ },
+ {
+  path: 'admin/projects',
+  canActivate: [authGuard],
+  loadComponent: () =>
+    import('./pages/admin-projects/admin-projects')
+      .then(m => m.AdminProjects)
+  },
+
+  {
+    path: 'admin/enquiries',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./pages/admin-enquiries/admin-enquiries')
+        .then(m => m.AdminEnquiries)
+  },
+
 ];

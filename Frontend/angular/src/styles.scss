@@ -1,1 +1,173 @@
 /* You can add global styles to this file, and also import other style files */
+
+/* SHIVRAI ADMIN THEME */
+
+app-root {
+  .admin-nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .theme-toggle {
+    border: 1px solid #749184;
+    background: transparent;
+    color: #fff;
+    border-radius: 8px;
+    padding: 10px 16px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+}
+
+/* MONOCHROME DARK MODE */
+
+app-root.admin-dark {
+  display: block;
+  min-height: 100vh;
+  background: #0d0d0d;
+  color: #fff;
+
+  .admin-navigation {
+    background: #111 !important;
+    border-bottom: 1px solid #333;
+
+    a,
+    .admin-brand span {
+      color: #fff !important;
+    }
+
+    button {
+      background: #242424;
+      color: #fff;
+      border-color: #555;
+    }
+  }
+
+  main,
+  .admin-dashboard,
+  .admin-projects,
+  .admin-enquiries {
+    background: #0d0d0d !important;
+    color: #fff !important;
+  }
+
+  /* DASHBOARD AND ENQUIRY CARDS */
+
+  .stat-card,
+  .enquiry-stat-card,
+  .dashboard-panel,
+  .enquiry-card,
+  .enquiry-header,
+  .enquiry-body,
+  .enquiry-footer,
+  .enquiry-summary {
+    background: #202020 !important;
+    color: #fff !important;
+    border-color: #383838 !important;
+    box-shadow: none !important;
+  }
+
+  /* TEXT */
+
+  h1,
+  h2,
+  h3,
+  h4,
+  strong,
+  .action-text strong,
+  .stat-card h2,
+  .enquiry-stat-card h2 {
+    color: #fff !important;
+  }
+
+  p,
+  small,
+  .eyebrow,
+  .stat-label,
+  .enquiry-meta,
+  .enquiry-message,
+  .dashboard-footer {
+    color: #aaa !important;
+  }
+
+  /* LINKS AND ICONS */
+
+  .dashboard-panel a,
+  .enquiry-stat-card a,
+  .action-item,
+  .panel-header a {
+    color: #ddd !important;
+  }
+
+  .stat-icon,
+  .action-icon,
+  .enquiry-avatar,
+  .analytics-icon {
+    background: #353535 !important;
+    color: #fff !important;
+  }
+
+  /* FORM CONTROLS */
+
+  input,
+  textarea,
+  select {
+    background: #272727 !important;
+    color: #fff !important;
+    border-color: #484848 !important;
+
+    &::placeholder {
+      color: #999 !important;
+    }
+
+    &:focus {
+      border-color: #aaa !important;
+      box-shadow: 0 0 0 3px #ffffff14 !important;
+    }
+  }
+
+  /* BUTTONS */
+
+  .header-action,
+  .search-btn,
+  .dashboard-btn {
+    background: #eee !important;
+    color: #111 !important;
+    border-color: #eee !important;
+  }
+
+  .clear-btn,
+  .pagination button {
+    background: #303030 !important;
+    color: #fff !important;
+    border-color: #505050 !important;
+  }
+
+  /* STATUS INDICATORS */
+
+  .status-badge,
+  .status-badge.pending,
+  .status-badge.contacted,
+  .status-badge.resolved,
+  .status,
+  .coming-soon {
+    background: #383838 !important;
+    color: #eee !important;
+    border-color: #555 !important;
+  }
+
+  /* DIVIDERS */
+
+  .enquiry-row,
+  .action-item {
+    border-color: #393939 !important;
+  }
+}
+
+@media (max-width: 600px) {
+  app-root .admin-nav-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}

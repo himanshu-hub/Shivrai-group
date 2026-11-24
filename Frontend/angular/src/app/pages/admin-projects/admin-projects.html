@@ -1,0 +1,577 @@
+
+<section class="admin-projects">
+
+  <div class="page-header">
+    <div>
+      <p class="eyebrow">ADMINISTRATION / PROJECTS</p>
+      <h1>Manage Projects</h1>
+      <p>Create, update and manage your real estate projects.</p>
+    </div>
+
+    <a href="/admin/dashboard" class="back-link">
+      Back to Dashboard
+    </a>
+  </div>
+
+  @if (message) {
+    <p class="success">{{ message }}</p>
+  }
+
+  @if (error && !showEditModal) {
+    <p class="error" role="alert">{{ error }}</p>
+  }
+
+  <!-- ADD NEW PROJECT -->
+  <div class="panel">
+    <div class="panel-heading">
+      <div>
+        <h2>Add New Project</h2>
+        <p>Fields marked with <span class="required">*</span> are mandatory.</p>
+      </div>
+    </div>
+
+    <form
+      class="project-form"
+      (ngSubmit)="saveProject()"
+      #addForm="ngForm"
+    >
+      <div class="form-grid">
+
+        <!-- PROJECT NAME -->
+        <div class="field">
+          <label for="add-name">
+            Project Name <span class="required">*</span>
+          </label>
+
+          <input
+            id="add-name"
+            name="name"
+            placeholder="Enter project name"
+            [(ngModel)]="form.name"
+            #addName="ngModel"
+            required
+            minlength="2"
+            pattern=".*\S.*"
+            [class.invalid-input]="addName.invalid && addName.touched"
+          />
+
+          @if (addName.invalid && addName.touched) {
+            <small class="field-error">
+              @if (addName.errors?.['required']) {
+                Project name is required.
+              } @else if (addName.errors?.['minlength']) {
+                Enter at least 2 characters.
+              } @else {
+                Project name cannot contain only spaces.
+              }
+            </small>
+          }
+        </div>
+
+        <!-- LOCATION -->
+        <div class="field">
+          <label for="add-location">
+            Location <span class="required">*</span>
+          </label>
+
+          <input
+            id="add-location"
+            name="location"
+            placeholder="Enter project location"
+            [(ngModel)]="form.location"
+            #addLocation="ngModel"
+            required
+            minlength="2"
+            pattern=".*\S.*"
+            [class.invalid-input]="addLocation.invalid && addLocation.touched"
+          />
+
+          @if (addLocation.invalid && addLocation.touched) {
+            <small class="field-error">
+              @if (addLocation.errors?.['required']) {
+                Project location is required.
+              } @else if (addLocation.errors?.['minlength']) {
+                Enter at least 2 characters.
+              } @else {
+                Location cannot contain only spaces.
+              }
+            </small>
+          }
+        </div>
+
+        <!-- STATUS -->
+        <div class="field">
+          <label for="add-status">
+            Project Status <span class="required">*</span>
+          </label>
+
+          <select
+            id="add-status"
+            name="status"
+            [(ngModel)]="form.status"
+            #addStatus="ngModel"
+            required
+            [class.invalid-input]="addStatus.invalid && addStatus.touched"
+          >
+            <option value="" disabled>Select project status</option>
+            <option value="Ongoing">Ongoing</option>
+            <option value="Upcoming">Upcoming</option>
+            <option value="Completed">Completed</option>
+          </select>
+
+          @if (addStatus.invalid && addStatus.touched) {
+            <small class="field-error">
+              Please select a project status.
+            </small>
+          }
+        </div>
+
+        <!-- CATEGORY -->
+        <div class="field">
+          <label for="add-category">
+            Category <span class="required">*</span>
+          </label>
+
+          <select
+            id="add-category"
+            name="category"
+            [(ngModel)]="form.category"
+            #addCategory="ngModel"
+            required
+            [class.invalid-input]="addCategory.invalid && addCategory.touched"
+          >
+            <option value="" disabled>Select category</option>
+            <option value="Residential">Residential</option>
+            <option value="Commercial">Commercial</option>
+          </select>
+
+          @if (addCategory.invalid && addCategory.touched) {
+            <small class="field-error">
+              Please select a project category.
+            </small>
+          }
+        </div>
+
+        <!-- DESCRIPTION -->
+        <div class="field full-width">
+          <label for="add-description">
+            Description <span class="required">*</span>
+          </label>
+
+          <textarea
+            id="add-description"
+            name="description"
+            placeholder="Enter project description"
+            [(ngModel)]="form.description"
+            #addDescription="ngModel"
+            required
+            minlength="5"
+            pattern="[\s\S]*\S[\s\S]*"
+            [class.invalid-input]="addDescription.invalid && addDescription.touched"
+          ></textarea>
+
+          @if (addDescription.invalid && addDescription.touched) {
+            <small class="field-error">
+              @if (addDescription.errors?.['required']) {
+                Project description is required.
+              } @else if (addDescription.errors?.['minlength']) {
+                Description must contain at least 5 characters.
+              } @else {
+                Description cannot contain only spaces.
+              }
+            </small>
+          }
+        </div>
+
+        <!-- IMAGE URL -->
+        <div class="field full-width">
+          <label for="add-image">
+            Image URL <span class="optional">(Optional)</span>
+          </label>
+
+          <input
+            id="add-image"
+            name="image"
+            type="url"
+            placeholder="https://example.com/project.jpg"
+            [(ngModel)]="form.image"
+            #addImage="ngModel"
+            pattern="https?://.+"
+            [class.invalid-input]="addImage.invalid && addImage.touched"
+          />
+
+          @if (addImage.invalid && addImage.touched) {
+            <small class="field-error">
+              Enter a valid URL starting with http:// or https://.
+            </small>
+          }
+        </div>
+
+      </div>
+
+      <div class="form-actions">
+        <button
+          type="submit"
+          class="btn-primary"
+          [disabled]="addForm.invalid || saving || showEditModal"
+        >
+          {{ saving ? 'Saving...' : '+ Add Project' }}
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- EXISTING PROJECTS -->
+  <div class="panel projects-panel">
+
+    <div class="panel-heading">
+      <div>
+        <h2>Existing Projects</h2>
+        <p>View, search and manage your projects.</p>
+      </div>
+
+      <span class="count-badge">
+        {{ projects.length }} Loaded
+      </span>
+    </div>
+
+    <div class="project-filters">
+      <input
+        type="search"
+        placeholder="Search project name or location..."
+        [(ngModel)]="searchQuery"
+        aria-label="Search projects"
+      />
+
+      <select
+        [(ngModel)]="filterStatus"
+        aria-label="Filter by status"
+      >
+        <option value="">All Statuses</option>
+        <option value="Ongoing">Ongoing</option>
+        <option value="Upcoming">Upcoming</option>
+        <option value="Completed">Completed</option>
+      </select>
+
+      <select
+        [(ngModel)]="filterCategory"
+        aria-label="Filter by category"
+      >
+        <option value="">All Categories</option>
+        <option value="Residential">Residential</option>
+        <option value="Commercial">Commercial</option>
+      </select>
+
+      <button
+        type="button"
+        class="btn-secondary"
+        (click)="clearFilters()"
+      >
+        Clear Filters
+      </button>
+    </div>
+
+    @if (loading) {
+      <p class="info-text">Loading projects...</p>
+    } @else {
+
+      <p class="result-count">
+        Showing {{ filteredProjects.length }} of
+        {{ projects.length }} loaded projects
+      </p>
+
+      <div class="projects-table-wrapper">
+        <table class="projects-table">
+          <thead>
+            <tr>
+              <th>Project Name</th>
+              <th>Location</th>
+              <th>Status</th>
+              <th>Category</th>
+              <th class="actions-heading">Actions</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            @for (project of filteredProjects; track project.id) {
+              <tr>
+                <td class="project-name">{{ project.name }}</td>
+                <td>{{ project.location }}</td>
+
+                <td>
+                  <span
+                    class="status-badge"
+                    [class.ongoing]="project.status.toLowerCase() === 'ongoing'"
+                    [class.upcoming]="project.status.toLowerCase() === 'upcoming'"
+                    [class.completed]="project.status.toLowerCase() === 'completed'"
+                  >
+                    {{ project.status }}
+                  </span>
+                </td>
+
+                <td>{{ project.category || '—' }}</td>
+
+                <td class="table-actions">
+                  <button
+                    type="button"
+                    class="btn-edit"
+                    (click)="editProject(project)"
+                  >
+                    Edit
+                  </button>
+
+                  <button
+                    type="button"
+                    class="btn-delete"
+                    (click)="deleteProject(project)"
+                  >
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="5" class="empty-state">
+                  No projects match your filters.
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+
+  <!-- EDIT PROJECT POPUP -->
+  @if (showEditModal) {
+    <div class="modal-overlay">
+      <div
+        class="modal-content"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="edit-project-title"
+      >
+
+        <div class="modal-header">
+          <div>
+            <p class="eyebrow">PROJECT MANAGEMENT</p>
+            <h2 id="edit-project-title">Edit Project</h2>
+          </div>
+
+          <button
+            type="button"
+            class="modal-close"
+            (click)="cancelEdit()"
+            [disabled]="saving"
+            aria-label="Close popup"
+          >
+            ✕
+          </button>
+        </div>
+
+        @if (error) {
+          <p class="error" role="alert">{{ error }}</p>
+        }
+
+        <p class="form-note">
+          Fields marked with <span class="required">*</span> are mandatory.
+        </p>
+
+        <form
+          class="project-form"
+          (ngSubmit)="saveProject()"
+          #editForm="ngForm"
+        >
+          <div class="form-grid">
+
+            <!-- EDIT NAME -->
+            <div class="field full-width">
+              <label for="edit-name">
+                Project Name <span class="required">*</span>
+              </label>
+
+              <input
+                id="edit-name"
+                name="name"
+                [(ngModel)]="form.name"
+                #editName="ngModel"
+                required
+                minlength="2"
+                pattern=".*\S.*"
+                [class.invalid-input]="editName.invalid && editName.touched"
+              />
+
+              @if (editName.invalid && editName.touched) {
+                <small class="field-error">
+                  @if (editName.errors?.['required']) {
+                    Project name is required.
+                  } @else if (editName.errors?.['minlength']) {
+                    Enter at least 2 characters.
+                  } @else {
+                    Project name cannot contain only spaces.
+                  }
+                </small>
+              }
+            </div>
+
+            <!-- EDIT STATUS -->
+            <div class="field">
+              <label for="edit-status">
+                Status <span class="required">*</span>
+              </label>
+
+              <select
+                id="edit-status"
+                name="status"
+                [(ngModel)]="form.status"
+                #editStatus="ngModel"
+                required
+                [class.invalid-input]="editStatus.invalid && editStatus.touched"
+              >
+                <option value="" disabled>Select project status</option>
+                <option value="Ongoing">Ongoing</option>
+                <option value="Upcoming">Upcoming</option>
+                <option value="Completed">Completed</option>
+              </select>
+
+              @if (editStatus.invalid && editStatus.touched) {
+                <small class="field-error">
+                  Please select a project status.
+                </small>
+              }
+            </div>
+
+            <!-- EDIT CATEGORY -->
+            <div class="field">
+              <label for="edit-category">
+                Category <span class="required">*</span>
+              </label>
+
+              <select
+                id="edit-category"
+                name="category"
+                [(ngModel)]="form.category"
+                #editCategory="ngModel"
+                required
+                [class.invalid-input]="editCategory.invalid && editCategory.touched"
+              >
+                <option value="" disabled>Select category</option>
+                <option value="Residential">Residential</option>
+                <option value="Commercial">Commercial</option>
+              </select>
+
+              @if (editCategory.invalid && editCategory.touched) {
+                <small class="field-error">
+                  Please select a project category.
+                </small>
+              }
+            </div>
+
+            <!-- EDIT LOCATION -->
+            <div class="field full-width">
+              <label for="edit-location">
+                Location <span class="required">*</span>
+              </label>
+
+              <input
+                id="edit-location"
+                name="location"
+                [(ngModel)]="form.location"
+                #editLocation="ngModel"
+                required
+                minlength="2"
+                pattern=".*\S.*"
+                [class.invalid-input]="editLocation.invalid && editLocation.touched"
+              />
+
+              @if (editLocation.invalid && editLocation.touched) {
+                <small class="field-error">
+                  @if (editLocation.errors?.['required']) {
+                    Location is required.
+                  } @else if (editLocation.errors?.['minlength']) {
+                    Enter at least 2 characters.
+                  } @else {
+                    Location cannot contain only spaces.
+                  }
+                </small>
+              }
+            </div>
+
+            <!-- EDIT DESCRIPTION -->
+            <div class="field full-width">
+              <label for="edit-description">
+                Description <span class="required">*</span>
+              </label>
+
+              <textarea
+                id="edit-description"
+                name="description"
+                [(ngModel)]="form.description"
+                #editDescription="ngModel"
+                required
+                minlength="5"
+                pattern="[\s\S]*\S[\s\S]*"
+                [class.invalid-input]="editDescription.invalid && editDescription.touched"
+              ></textarea>
+
+              @if (editDescription.invalid && editDescription.touched) {
+                <small class="field-error">
+                  @if (editDescription.errors?.['required']) {
+                    Project description is required.
+                  } @else if (editDescription.errors?.['minlength']) {
+                    Description must contain at least 5 characters.
+                  } @else {
+                    Description cannot contain only spaces.
+                  }
+                </small>
+              }
+            </div>
+
+            <!-- EDIT IMAGE -->
+            <div class="field full-width">
+              <label for="edit-image">
+                Image URL <span class="optional">(Optional)</span>
+              </label>
+
+              <input
+                id="edit-image"
+                name="image"
+                type="url"
+                [(ngModel)]="form.image"
+                #editImage="ngModel"
+                pattern="https?://.+"
+                [class.invalid-input]="editImage.invalid && editImage.touched"
+              />
+
+              @if (editImage.invalid && editImage.touched) {
+                <small class="field-error">
+                  Enter a valid URL starting with http:// or https://.
+                </small>
+              }
+            </div>
+          </div>
+
+          <div class="modal-actions">
+            <button
+              type="button"
+              class="btn-secondary"
+              (click)="cancelEdit()"
+              [disabled]="saving"
+            >
+              Cancel
+            </button>
+
+            <button
+              type="submit"
+              class="btn-primary"
+              [disabled]="editForm.invalid || saving"
+            >
+              {{ saving ? 'Saving...' : 'Update Project' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+
+</section>

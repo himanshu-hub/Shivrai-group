@@ -1,1 +1,79 @@
-<p>admin-login works!</p>
+
+<div class="login-page">
+  <div class="login-container">
+
+    <div class="brand-panel">
+      <div class="brand-name">SHIVRAI<span>GROUP</span></div>
+
+      <div class="brand-content">
+        <span class="eyebrow">ADMINISTRATION PORTAL</span>
+        <h1>Building spaces.<br />Managing excellence.</h1>
+        <p>
+          A dedicated workspace to manage projects,
+          enquiries, and your digital presence.
+        </p>
+      </div>
+
+      <div class="brand-footer">
+        © Shivrai Group. All rights reserved.
+      </div>
+    </div>
+
+    <div class="form-panel">
+      <div class="login-form-wrapper">
+        <span class="form-eyebrow">SECURE ACCESS</span>
+        <h2>Welcome back</h2>
+        <p class="form-subtitle">
+          Sign in to your administrator account.
+        </p>
+
+        <form (ngSubmit)="login()" #loginForm="ngForm">
+          <div class="field">
+            <label for="username">Username</label>
+            <input
+              id="username"
+              name="username"
+              type="text"
+              [(ngModel)]="username"
+              placeholder="Enter your username"
+              autocomplete="username"
+              required
+            />
+          </div>
+
+          <div class="field">
+            <label for="password">Password</label>
+            <input
+              id="password"
+              name="password"
+              type="password"
+              [(ngModel)]="password"
+              placeholder="Enter your password"
+              autocomplete="current-password"
+              required
+            />
+          </div>
+
+          @if (error) {
+            <p class="error-message" role="alert">{{ error }}</p>
+          }
+
+          <button
+            class="login-button"
+            type="submit"
+            [disabled]="loginForm.invalid || loading"
+          >
+            {{ loading ? 'Signing in...' : 'Sign In' }}
+            <span aria-hidden="true">→</span>
+          </button>
+        </form>
+
+        <p class="security-note">
+          <span aria-hidden="true">◆</span>
+          Authorized personnel only
+        </p>
+      </div>
+    </div>
+
+  </div>
+</div>

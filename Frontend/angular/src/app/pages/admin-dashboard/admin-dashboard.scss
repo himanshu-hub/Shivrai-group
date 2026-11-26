@@ -1016,3 +1016,52 @@ app-root.admin-dark {
   }
 }
 
+
+/* MEDIA LIBRARY DASHBOARD CARD */
+
+.stats-grid .stat-card {
+  a[routerLink="/admin/media"] {
+    display: inline-flex;
+    align-items: center;
+    width: fit-content;
+    margin-top: 12px;
+    padding: 8px 12px;
+    border-radius: 7px;
+    background: #f2f4f7;
+    color: #344054;
+    font-size: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background 0.2s ease;
+
+    &:hover {
+      background: #e4e7ec;
+    }
+  }
+}
+
+/* MEDIA LIBRARY QUICK ACTION */
+
+.quick-actions .action-item[routerLink="/admin/media"] {
+  .action-icon {
+    font-size: 22px;
+  }
+
+  &:hover .action-arrow {
+    transform: translateX(4px);
+  }
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+}

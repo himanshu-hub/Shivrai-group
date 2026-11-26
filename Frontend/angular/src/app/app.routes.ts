@@ -65,5 +65,12 @@ export const routes: Routes = [
       import('./pages/admin-enquiries/admin-enquiries')
         .then(m => m.AdminEnquiries)
   },
+  {
+  path: 'admin/media',
+  canActivate: [authGuard],
+  loadComponent: () =>
+    import('./pages/admin-media-library/admin-media-library')
+      .then(m => m.AdminMediaLibrary)
+  }
 
 ];

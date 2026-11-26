@@ -8,7 +8,9 @@ import {
 } from '@angular/core';
 
 import { isPlatformBrowser, DatePipe } from '@angular/common';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { RouterLink } from '@angular/router';
+
 import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
@@ -22,6 +24,51 @@ import {
   Enquiry
 } from '../../services/admin-enquiry';
 
+import { AuthService } from '../../services/auth';
+
+
+// =============================================
+// DASHBOARD API RESPONSE TYPES
+// =============================================
+
+interface ProjectDashboardStats {
+  total: number;
+  ongoing: number;
+  completed: number;
+  upcoming: number;
+  total_views: number;
+}
+
+interface EnquiryDashboardStats {
+  total: number;
+  pending: number;
+  contacted: number;
+  resolved: number;
+}
+
+interface MediaDashboardStats {
+  total_images: number;
+}
+
+interface DashboardResponse {
+  projects: ProjectDashboardStats;
+  enquiries: EnquiryDashboardStats;
+  media: MediaDashboardStats;
+  recent_enquiries: {
+    id: string;
+    name: string;
+    email: string;
+    subject: string | null;
+    status: string;
+    created_at: string | null;
+  }[];
+}
+
+
+// =============================================
+// ADMIN DASHBOARD COMPONENT
+// =============================================
+
 @Component({
   selector: 'app-admin-dashboard',
   imports: [RouterLink, DatePipe],
@@ -30,96 +77,123 @@ import {
 })
 export class AdminDashboard implements OnInit {
 
+  private http = inject(HttpClient);
+  private auth = inject(AuthService);
+
   private projectService = inject(ProjectService);
   private enquiryService = inject(AdminEnquiryService);
+
   private cdr = inject(ChangeDetectorRef);
   private platformId = inject(PLATFORM_ID);
 
-  // DASHBOARD STATE
+  private dashboardUrl =
+    'http://127.0.0.1:8000/auth/dashboard';
+
+
+  // =============================================
+  // GENERAL STATE
+  // =============================================
 
   loading = true;
   error = '';
 
+
+  // =============================================
   // PROJECT STATISTICS
+  // =============================================
 
   totalProjects: number | null = null;
   ongoingProjects: number | null = null;
   upcomingProjects: number | null = null;
   completedProjects: number | null = null;
 
-  // PROJECT VISITOR ANALYTICS
+  totalViews = 0;
+
+
+  // =============================================
+  // PROJECT ANALYTICS
+  // =============================================
 
   mostViewedProjects: Project[] = [];
 
+
+  // =============================================
   // ENQUIRY STATISTICS
+  // =============================================
 
   totalEnquiries: number | null = null;
   pendingEnquiries: number | null = null;
 
+  contactedEnquiries = 0;
+  resolvedEnquiries = 0;
+
   recentEnquiries: Enquiry[] = [];
 
-  ngOnInit() {
+
+  // =============================================
+  // MEDIA STATISTICS
+  // =============================================
+
+  totalImages = 0;
+
+
+  // =============================================
+  // COMPONENT INITIALIZATION
+  // =============================================
+
+  ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
       this.loadDashboard();
     }
   }
 
-  // EXTRACT TOTAL PROJECT COUNT
 
-  private getProjectCount(response: unknown): number | null {
-    if (!response || typeof response !== 'object') {
-      return null;
+  // =============================================
+  // LOAD DASHBOARD
+  // =============================================
+
+  loadDashboard(): void {
+    if (!isPlatformBrowser(this.platformId)) {
+      return;
     }
 
-    const data = response as Record<string, unknown>;
-    const count = data['total_projects'] ?? data['total'];
-
-    return typeof count === 'number' ? count : null;
-  }
-
-  // LOAD ALL DASHBOARD DATA
-
-  loadDashboard() {
     this.loading = true;
     this.error = '';
 
-    const safeProjects = (status?: string) =>
-      this.projectService
-        .getProjects(status, undefined, undefined, 1, 1)
-        .pipe(
-          catchError(() => of(null))
-        );
+    const token = this.auth.getToken();
+
+    if (!token) {
+      this.loading = false;
+      this.error = 'Admin session expired. Please log in again.';
+      this.cdr.detectChanges();
+      return;
+    }
+
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`
+    });
 
     forkJoin({
 
-      // PROJECT COUNTS
+      // Main admin dashboard summary
+      dashboard: this.http.get<DashboardResponse>(
+        this.dashboardUrl,
+        { headers }
+      ).pipe(
+        catchError(() => of(null))
+      ),
 
-      all: safeProjects(),
-
-      ongoing: safeProjects('Ongoing'),
-
-      upcoming: safeProjects('Upcoming'),
-
-      completed: safeProjects('Completed'),
-
-      // MOST VIEWED PROJECTS
-
+      // Preserve existing most-viewed projects display
       mostViewed: this.projectService
         .getMostViewedProjects(5)
         .pipe(
           catchError(() => of(null))
         ),
 
-      // CUSTOMER ENQUIRIES
-
+      // Preserve existing full enquiry records
+      // expected by the dashboard HTML
       enquiries: this.enquiryService
         .getEnquiries(1, 5)
-        .pipe(
-          catchError(() => of(null))
-        ),
-
-      pending: this.enquiryService
-        .getEnquiries(1, 1, '', 'Pending')
         .pipe(
           catchError(() => of(null))
         )
@@ -128,48 +202,88 @@ export class AdminDashboard implements OnInit {
 
       next: (results) => {
 
-        // PROJECT STATISTICS
+        const dashboard = results.dashboard;
 
-        this.totalProjects =
-          this.getProjectCount(results.all);
+        // =============================================
+        // PROJECT COUNTS
+        // =============================================
 
-        this.ongoingProjects =
-          this.getProjectCount(results.ongoing);
+        if (dashboard) {
+          this.totalProjects = dashboard.projects.total;
 
-        this.upcomingProjects =
-          this.getProjectCount(results.upcoming);
+          this.ongoingProjects =
+            dashboard.projects.ongoing;
 
-        this.completedProjects =
-          this.getProjectCount(results.completed);
+          this.upcomingProjects =
+            dashboard.projects.upcoming;
 
+          this.completedProjects =
+            dashboard.projects.completed;
+
+          this.totalViews =
+            dashboard.projects.total_views;
+
+          // =============================================
+          // ENQUIRY COUNTS
+          // =============================================
+
+          this.totalEnquiries =
+            dashboard.enquiries.total;
+
+          this.pendingEnquiries =
+            dashboard.enquiries.pending;
+
+          this.contactedEnquiries =
+            dashboard.enquiries.contacted;
+
+          this.resolvedEnquiries =
+            dashboard.enquiries.resolved;
+
+          // =============================================
+          // MEDIA LIBRARY
+          // =============================================
+
+          this.totalImages =
+            dashboard.media.total_images;
+
+        } else {
+          this.totalProjects = null;
+          this.ongoingProjects = null;
+          this.upcomingProjects = null;
+          this.completedProjects = null;
+
+          this.totalEnquiries = null;
+          this.pendingEnquiries = null;
+
+          this.totalViews = 0;
+          this.totalImages = 0;
+          this.contactedEnquiries = 0;
+          this.resolvedEnquiries = 0;
+        }
+
+        // =============================================
         // MOST VIEWED PROJECTS
+        // =============================================
 
         this.mostViewedProjects =
           results.mostViewed?.projects ?? [];
 
-        // ENQUIRY STATISTICS
-
-        this.totalEnquiries =
-          results.enquiries?.total_enquiries ?? null;
-
-        this.pendingEnquiries =
-          results.pending?.total_enquiries ?? null;
+        // =============================================
+        // RECENT ENQUIRIES
+        // =============================================
 
         this.recentEnquiries =
           results.enquiries?.enquiries ?? [];
 
-        // CHECK FOR MISSING DATA
+        // =============================================
+        // ERROR HANDLING
+        // =============================================
 
-        const missingData = [
-          this.totalProjects,
-          this.ongoingProjects,
-          this.upcomingProjects,
-          this.completedProjects,
-          this.totalEnquiries,
-          this.pendingEnquiries
-        ].some(value => value === null);
-
-        if (missingData || results.mostViewed === null) {
+        if (
+          !dashboard ||
+          !results.mostViewed ||
+          !results.enquiries
+        ) {
           this.error =
             'Some dashboard statistics could not be loaded.';
         }
@@ -183,6 +297,7 @@ export class AdminDashboard implements OnInit {
         this.loading = false;
         this.cdr.detectChanges();
       }
+
     });
   }
 }

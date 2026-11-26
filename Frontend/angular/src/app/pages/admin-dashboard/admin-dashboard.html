@@ -66,6 +66,22 @@
       <p>Successfully completed</p>
     </article>
 
+
+      <article class="stat-card">
+        <div class="stat-top">
+          <span>Media Library</span>
+          <span class="stat-icon" aria-hidden="true">▧</span>
+        </div>
+
+        <h2>{{ loading ? '...' : totalImages }}</h2>
+        <p>Total images in Media Library</p>
+
+        <a routerLink="/admin/media">
+          Manage Media →
+        </a>
+      </article>
+
+
   </div>
 
   <!-- ENQUIRY STATISTICS -->
@@ -218,6 +234,19 @@
           <span class="action-arrow" aria-hidden="true">→</span>
         </a>
 
+
+        <a routerLink="/admin/media" class="action-item">
+          <span class="action-icon" aria-hidden="true">▧</span>
+
+          <span class="action-text">
+            <strong>Media Library</strong>
+            <small>Upload and manage images</small>
+          </span>
+
+          <span class="action-arrow" aria-hidden="true">→</span>
+        </a>
+
+
       </section>
 
       <!-- MOST VIEWED PROJECTS -->
@@ -289,6 +318,17 @@
 
           </div>
         }
+
+        <a routerLink="/admin/media" class="action-item">
+          <span class="action-icon" aria-hidden="true">▧</span>
+
+          <span class="action-text">
+            <strong>Media Library</strong>
+            <small>Upload and manage images</small>
+          </span>
+
+          <span class="action-arrow" aria-hidden="true">→</span>
+        </a>
 
       </section>
 

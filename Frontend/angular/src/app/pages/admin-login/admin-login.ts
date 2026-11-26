@@ -1,5 +1,10 @@
 
-import { Component, inject, ChangeDetectorRef } from '@angular/core';
+import {
+  Component,
+  inject,
+  ChangeDetectorRef
+} from '@angular/core';
+
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth';
@@ -21,6 +26,10 @@ export class AdminLogin {
   error = '';
 
   login() {
+    if (this.loading) {
+      return;
+    }
+
     if (!this.username.trim() || !this.password) {
       this.error = 'Enter your username and password.';
       return;
@@ -29,10 +38,11 @@ export class AdminLogin {
     this.loading = true;
     this.error = '';
 
-    this.auth.login(this.username, this.password).subscribe({
-      next: (response) => {
-        sessionStorage.setItem('admin_token', response.access_token);
-
+    this.auth.login(
+      this.username.trim(),
+      this.password
+    ).subscribe({
+      next: () => {
         this.loading = false;
         this.cdr.detectChanges();
 

@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.routes.auth_routes import router as auth_router
 from contextlib import asynccontextmanager
 from app.routes.image_routes import router as image_router
+from app.routes.gallery_order_routes import router as gallery_order_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -37,6 +38,7 @@ app.include_router(project_router)
 app.include_router(contact_router)
 app.include_router(auth_router)
 app.include_router(image_router)
+app.include_router(gallery_order_router)
 
 @app.get("/database-status")
 async def database_status():

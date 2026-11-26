@@ -28,7 +28,7 @@ export class Projects implements OnInit {
   currentPage = 1;
   totalPages = 0;
   totalProjects = 0;
-  limit = 5;
+  limit = 6;
 
   ngOnInit() {
     this.route.queryParamMap.subscribe(params => {

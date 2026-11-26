@@ -1,19 +1,235 @@
 
 <section class="project-details">
-  <a routerLink="/projects">← Back to Projects</a>
 
   @if (loading) {
-    <p>Loading project details...</p>
+    <div class="page-state">
+      <p>Loading project details...</p>
+    </div>
+
   } @else if (error) {
-    <p>{{ error }}</p>
+    <div class="page-state">
+      <h1>Project Unavailable</h1>
+      <p>{{ error }}</p>
+      <a routerLink="/projects">← Back to Projects</a>
+    </div>
+
   } @else if (project) {
-    <h1>{{ project.name }}</h1>
 
-    <p><strong>Status:</strong> {{ project.status }}</p>
-    <p><strong>Category:</strong> {{ project.category }}</p>
-    <p><strong>Location:</strong> {{ project.location }}</p>
+    <div class="project-container">
 
-    <h2>Project Overview</h2>
-    <p>{{ project.description }}</p>
+      <!-- BREADCRUMB -->
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a routerLink="/">Home</a>
+        <span>/</span>
+        <a routerLink="/projects">Projects</a>
+        <span>/</span>
+        <span class="current">{{ project.name }}</span>
+      </nav>
+
+      <!-- PROJECT INTRO -->
+      <header class="project-intro">
+
+        <div>
+          <p class="eyebrow">SHIVRAI GROUP / DEVELOPMENTS</p>
+
+          <h1>{{ project.name }}</h1>
+
+          <p class="project-location">
+            <span aria-hidden="true">⌖</span>
+            {{ project.location }}
+          </p>
+        </div>
+
+        <div class="project-status">
+          {{ project.status }}
+        </div>
+
+      </header>
+
+      <!-- MAIN PROJECT IMAGE -->
+      <div class="project-hero">
+
+        @if (
+          project.image &&
+          project.image.startsWith('http')
+        ) {
+          <img
+            [src]="project.image"
+            [alt]="project.name + ' project cover'"
+            class="hero-image"
+          />
+        } @else {
+          <div class="hero-placeholder">
+            <span>SHIVRAI GROUP</span>
+            <p>Project imagery coming soon</p>
+          </div>
+        }
+
+        <div class="hero-caption">
+          <span>{{ project.name }}</span>
+          <span>{{ project.location }}</span>
+        </div>
+
+      </div>
+
+      <!-- INFORMATION / OVERVIEW -->
+      <div class="project-content">
+
+        <section class="overview-section">
+
+          <p class="eyebrow">01 / THE DEVELOPMENT</p>
+
+          <h2>Project Overview</h2>
+
+          <p class="overview-description">
+            {{ project.description }}
+          </p>
+
+        </section>
+
+        <aside class="project-facts">
+
+          <h3>Project Information</h3>
+
+          <div class="fact-row">
+            <span>Project</span>
+            <strong>{{ project.name }}</strong>
+          </div>
+
+          <div class="fact-row">
+            <span>Location</span>
+            <strong>{{ project.location }}</strong>
+          </div>
+
+          <div class="fact-row">
+            <span>Category</span>
+            <strong>{{ project.category }}</strong>
+          </div>
+
+          <div class="fact-row">
+            <span>Status</span>
+            <strong>{{ project.status }}</strong>
+          </div>
+
+          <a routerLink="/contact" class="enquire-button">
+            Enquire About This Project
+            <span aria-hidden="true">↗</span>
+          </a>
+
+        </aside>
+
+      </div>
+
+      
+      <!-- PROJECT GALLERY -->
+      @if ($any(project).gallery?.length) {
+
+        <section class="gallery-section">
+
+          <div class="gallery-heading">
+            <div>
+              <p class="eyebrow">02 / VISUAL EXPLORATION</p>
+              <h2>Project Gallery</h2>
+            </div>
+
+            <!-- SLIDER BUTTONS -->
+            <div class="gallery-controls">
+              <button
+                type="button"
+                class="gallery-arrow"
+                (click)="scrollGallery(-1)"
+                aria-label="Previous image"
+              >
+                ←
+              </button>
+
+              <button
+                type="button"
+                class="gallery-arrow"
+                (click)="scrollGallery(1)"
+                aria-label="Next image"
+              >
+                →
+              </button>
+            </div>
+          </div>
+
+          <!-- IMAGE SLIDER -->
+          <div #galleryTrack class="gallery-slider">
+
+            @for (
+              imageUrl of $any(project).gallery;
+              track $index
+            ) {
+
+              @if (
+                imageUrl &&
+                imageUrl.startsWith('http')
+              ) {
+
+                <a
+                  [href]="imageUrl"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="gallery-slide"
+                  [attr.aria-label]="'View image of ' + project.name"
+                >
+
+                  <img
+                    [src]="imageUrl"
+                    [alt]="project.name + ' gallery image ' + ($index + 1)"
+                    loading="lazy"
+                  />
+
+                  <span class="gallery-open">
+                    View Image ↗
+                  </span>
+
+                </a>
+
+              }
+
+            }
+
+          </div>
+
+        </section>
+
+      }
+
+      <!-- CONTACT CTA -->
+      <section class="project-cta">
+
+        <div>
+          <p class="eyebrow">LET'S CONNECT</p>
+
+          <h2>
+            Interested in this
+            <em>development?</em>
+          </h2>
+
+          <p>
+            Get in touch with our team to learn more
+            about this project.
+          </p>
+        </div>
+
+        <a routerLink="/contact" class="cta-button">
+          Get in Touch
+          <span aria-hidden="true">↗</span>
+        </a>
+
+      </section>
+
+      <!-- BACK TO ALL PROJECTS -->
+      <div class="back-section">
+        <a routerLink="/projects">
+          ← Explore All Projects
+        </a>
+      </div>
+
+    </div>
+
   }
+
 </section>

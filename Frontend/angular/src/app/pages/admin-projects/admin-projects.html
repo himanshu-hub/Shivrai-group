@@ -183,28 +183,22 @@
           }
         </div>
 
-        <!-- IMAGE URL -->
+        <!-- COVER IMAGE FROM MEDIA LIBRARY -->
         <div class="field full-width">
-          <label for="add-image">
-            Image URL <span class="optional">(Optional)</span>
-          </label>
-
-          <input
-            id="add-image"
-            name="image"
-            type="url"
-            placeholder="https://example.com/project.jpg"
-            [(ngModel)]="form.image"
-            #addImage="ngModel"
-            pattern="https?://.+"
-            [class.invalid-input]="addImage.invalid && addImage.touched"
-          />
-
-          @if (addImage.invalid && addImage.touched) {
-            <small class="field-error">
-              Enter a valid URL starting with http:// or https://.
-            </small>
+          <label>Project Cover <span class="optional">(Optional)</span></label>
+          @if (coverPreviewUrl) {
+            <img [src]="coverPreviewUrl" alt="Project cover preview"
+                 style="display:block;width:170px;height:110px;object-fit:cover;border-radius:8px;margin:8px 0;" />
           }
+          <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+            <button type="button" class="btn-secondary" (click)="openMediaPicker()">
+              Choose from Media Library
+            </button>
+            @if (selectedCover) {
+              <span>{{ selectedCover.filename || 'Selected image' }}</span>
+              <button type="button" class="btn-secondary" (click)="clearSelectedCover()">Clear Selection</button>
+            }
+          </div>
         </div>
 
       </div>
@@ -527,27 +521,22 @@
               }
             </div>
 
-            <!-- EDIT IMAGE -->
+            <!-- EDIT PROJECT COVER -->
             <div class="field full-width">
-              <label for="edit-image">
-                Image URL <span class="optional">(Optional)</span>
-              </label>
-
-              <input
-                id="edit-image"
-                name="image"
-                type="url"
-                [(ngModel)]="form.image"
-                #editImage="ngModel"
-                pattern="https?://.+"
-                [class.invalid-input]="editImage.invalid && editImage.touched"
-              />
-
-              @if (editImage.invalid && editImage.touched) {
-                <small class="field-error">
-                  Enter a valid URL starting with http:// or https://.
-                </small>
+              <label>Project Cover <span class="optional">(Optional)</span></label>
+              @if (coverPreviewUrl) {
+                <img [src]="coverPreviewUrl" alt="Project cover preview"
+                     style="display:block;width:170px;height:110px;object-fit:cover;border-radius:8px;margin:8px 0;" />
               }
+              <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+                <button type="button" class="btn-secondary" (click)="openMediaPicker()">
+                  Choose from Media Library
+                </button>
+                @if (selectedCover) {
+                  <span>{{ selectedCover.filename || 'Selected image' }}</span>
+                  <button type="button" class="btn-secondary" (click)="clearSelectedCover()">Clear Selection</button>
+                }
+              </div>
             </div>
           </div>
 
@@ -570,6 +559,58 @@
             </button>
           </div>
         </form>
+      </div>
+    </div>
+  }
+
+
+  <!-- MEDIA LIBRARY PICKER -->
+  @if (showMediaPicker) {
+    <div class="modal-overlay" style="z-index:1100;">
+      <div class="modal-content" role="dialog" aria-modal="true"
+           aria-label="Choose cover from Media Library" style="width:min(900px,96vw);max-height:90vh;overflow:auto;">
+        <div class="modal-header">
+          <div>
+            <p class="eyebrow">MEDIA LIBRARY</p>
+            <h2>Choose Project Cover</h2>
+          </div>
+          <button type="button" class="modal-close" (click)="closeMediaPicker()" aria-label="Close image picker">✕</button>
+        </div>
+        <div style="display:flex;gap:10px;margin:14px 0;">
+          <input type="search" [(ngModel)]="mediaSearch" (keyup.enter)="searchMedia()"
+                 placeholder="Search images" aria-label="Search Media Library" style="flex:1;min-width:0;" />
+          <button type="button" class="btn-secondary" (click)="searchMedia()" [disabled]="mediaLoading">Search</button>
+        </div>
+        @if (mediaError) { <p class="error" role="alert">{{ mediaError }}</p> }
+        @if (mediaLoading) {
+          <p class="info-text">Loading images...</p>
+        } @else if (!mediaImages.length) {
+          <p class="info-text">No images found. Upload images in the Media Library first.</p>
+        } @else {
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px;">
+            @for (image of mediaImages; track image.id) {
+              <button type="button" (click)="chooseCover(image)"
+                      [attr.aria-label]="'Choose ' + (image.filename || 'image')"
+                      style="border:1px solid #c6cad0;border-radius:8px;padding:6px;background:transparent;cursor:pointer;text-align:left;">
+                <img [src]="image.image_url" [alt]="image.filename || 'Image'" loading="lazy"
+                     style="display:block;width:100%;height:105px;object-fit:cover;border-radius:5px;" />
+                <span style="display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-top:6px;">
+                  {{ image.filename || 'Untitled image' }}
+                </span>
+              </button>
+            }
+          </div>
+        }
+        <div class="modal-actions" style="justify-content:space-between;flex-wrap:wrap;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <button type="button" class="btn-secondary" (click)="changeMediaPage(-1)"
+                    [disabled]="mediaPage <= 1 || mediaLoading">Previous</button>
+            <span>Page {{ mediaPage }} of {{ mediaTotalPages }}</span>
+            <button type="button" class="btn-secondary" (click)="changeMediaPage(1)"
+                    [disabled]="mediaPage >= mediaTotalPages || mediaLoading">Next</button>
+          </div>
+          <button type="button" class="btn-secondary" (click)="closeMediaPicker()">Cancel</button>
+        </div>
       </div>
     </div>
   }

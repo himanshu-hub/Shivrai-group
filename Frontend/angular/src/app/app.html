@@ -2,86 +2,124 @@
 <!-- PUBLIC WEBSITE HEADER -->
 @if (!isAdminRoute()) {
 
-  <header class="site-header" (mouseleave)="closeMenu()">
+  <header class="site-header">
 
-    <a routerLink="/" class="logo" (mouseenter)="closeMenu()">
-      SHIVRAI <span>GROUP</span>
+    <a
+      routerLink="/"
+      class="logo"
+      (click)="closeMenu()"
+    >
+      SHIVRAI
+      <span>GROUP</span>
     </a>
 
-    <nav class="navigation">
+    <nav class="navigation" aria-label="Main navigation">
 
-      <a routerLink="/" (mouseenter)="closeMenu()">
+      <a routerLink="/" (click)="closeMenu()">
         HOME
       </a>
 
-      <a
-        routerLink="/projects"
-        (mouseenter)="openMenu('projects')"
+      <!-- PROJECTS CLICK DROPDOWN -->
+      <button
+        type="button"
+        class="nav-trigger"
         [class.active]="activeMenu() === 'projects'"
+        [attr.aria-expanded]="activeMenu() === 'projects'"
+        aria-controls="projects-menu"
+        (click)="activeMenu() === 'projects'
+          ? closeMenu()
+          : openMenu('projects')"
       >
         PROJECTS
-      </a>
+        <span class="nav-chevron">⌄</span>
+      </button>
 
-      <a
-        routerLink="/offices"
-        (mouseenter)="openMenu('commercial'); hoveredItem.set('offices')"
-        [class.active]="hoveredItem() === 'offices'"
+      <!-- COMBINED COMMERCIAL OPTION -->
+      <button
+        type="button"
+        class="nav-trigger"
+        [class.active]="activeMenu() === 'commercial'"
+        [attr.aria-expanded]="activeMenu() === 'commercial'"
+        aria-controls="commercial-menu"
+        (click)="activeMenu() === 'commercial'
+          ? closeMenu()
+          : openMenu('commercial')"
       >
-        OFFICES
-      </a>
+        COMMERCIAL
+        <span class="nav-chevron">⌄</span>
+      </button>
 
-      <a
-        routerLink="/retail"
-        (mouseenter)="openMenu('commercial'); hoveredItem.set('retail')"
-        [class.active]="hoveredItem() === 'retail'"
-      >
-        RETAIL
-      </a>
-
-      <a
-        routerLink="/about"
-        (mouseenter)="openMenu('about')"
+      <!-- ABOUT CLICK DROPDOWN -->
+      <button
+        type="button"
+        class="nav-trigger"
         [class.active]="activeMenu() === 'about'"
+        [attr.aria-expanded]="activeMenu() === 'about'"
+        aria-controls="about-menu"
+        (click)="activeMenu() === 'about'
+          ? closeMenu()
+          : openMenu('about')"
       >
         ABOUT
-      </a>
+        <span class="nav-chevron">⌄</span>
+      </button>
 
-      <a routerLink="/careers" (mouseenter)="closeMenu()">
+      <!-- <a routerLink="/careers" (click)="closeMenu()">
         CAREERS
-      </a>
+      </a> -->
 
     </nav>
 
-    <div class="header-right" (mouseenter)="closeMenu()">
+    <div class="header-right">
 
-      <span class="phone">+91 XXXXX XXXXX</span>
+      <span class="phone">
+        +91 XXXXX XXXXX
+      </span>
 
-      <a routerLink="/contact" class="contact-btn">
-        CONTACT US <span>—</span>
+      <a
+        routerLink="/contact"
+        class="contact-btn"
+        (click)="closeMenu()"
+      >
+        CONTACT US
+        <span aria-hidden="true">↗</span>
       </a>
 
     </div>
 
-    <!-- PROJECTS MEGA MENU -->
+    <!-- PROJECTS MENU -->
     @if (activeMenu() === 'projects') {
 
-      <div class="mega-menu">
+      <div
+        class="mega-menu"
+        id="projects-menu"
+      >
         <div class="mega-menu-content">
 
           <div class="mega-intro">
-            <span class="eyebrow">OUR DEVELOPMENTS</span>
-            <h2>PROJECTS</h2>
+
+            <span class="eyebrow">
+              OUR DEVELOPMENTS
+            </span>
+
+            <h2>Projects</h2>
 
             <p>
-              Explore residential and commercial developments by Shivrai Group.
+              Explore residential and commercial
+              developments by Shivrai Group.
             </p>
 
-            <a routerLink="/projects" (click)="closeMenu()">
-              VIEW ALL —
+            <a
+              routerLink="/projects"
+              (click)="closeMenu()"
+            >
+              VIEW ALL PROJECTS ↗
             </a>
+
           </div>
 
           <div class="mega-column">
+
             <h3>PROJECT STATUS</h3>
 
             <a
@@ -89,7 +127,7 @@
               [queryParams]="{status: 'Ongoing'}"
               (click)="closeMenu()"
             >
-              ONGOING PROJECTS
+              Ongoing Projects
             </a>
 
             <a
@@ -97,7 +135,7 @@
               [queryParams]="{status: 'Upcoming'}"
               (click)="closeMenu()"
             >
-              UPCOMING PROJECTS
+              Upcoming Projects
             </a>
 
             <a
@@ -105,11 +143,13 @@
               [queryParams]="{status: 'Completed'}"
               (click)="closeMenu()"
             >
-              COMPLETED PROJECTS
+              Completed Projects
             </a>
+
           </div>
 
           <div class="mega-column">
+
             <h3>CATEGORIES</h3>
 
             <a
@@ -117,7 +157,7 @@
               [queryParams]="{category: 'Residential'}"
               (click)="closeMenu()"
             >
-              RESIDENTIAL
+              Residential
             </a>
 
             <a
@@ -125,21 +165,23 @@
               [queryParams]="{category: 'Commercial'}"
               (click)="closeMenu()"
             >
-              COMMERCIAL
+              Commercial
             </a>
 
             <a routerLink="/offices" (click)="closeMenu()">
-              OFFICES
+              Offices
             </a>
 
             <a routerLink="/retail" (click)="closeMenu()">
-              RETAIL
+              Retail
             </a>
+
           </div>
 
           <div class="mega-image">
             <div class="mega-placeholder">
-              SHIVRAI GROUP
+              <span>SHIVRAI</span>
+              <small>DEVELOPMENTS</small>
             </div>
           </div>
 
@@ -148,18 +190,26 @@
 
     }
 
-    <!-- COMMERCIAL MEGA MENU -->
+    <!-- COMMERCIAL MENU -->
     @if (activeMenu() === 'commercial') {
 
-      <div class="mega-menu">
+      <div
+        class="mega-menu"
+        id="commercial-menu"
+      >
         <div class="mega-menu-content">
 
           <div class="mega-intro">
-            <span class="eyebrow">BUSINESS SPACES</span>
-            <h2>COMMERCIAL</h2>
+
+            <span class="eyebrow">
+              BUSINESS SPACES
+            </span>
+
+            <h2>Commercial</h2>
 
             <p>
-              Discover office spaces and retail developments.
+              Thoughtfully planned spaces for
+              businesses, workplaces and retail.
             </p>
 
             <a
@@ -167,29 +217,49 @@
               [queryParams]="{category: 'Commercial'}"
               (click)="closeMenu()"
             >
-              VIEW ALL —
+              ALL COMMERCIAL PROJECTS ↗
             </a>
+
           </div>
 
           <div class="mega-column">
-            <h3>OFFICES</h3>
 
-            <a routerLink="/offices" (click)="closeMenu()">
-              EXPLORE OFFICES
+            <h3>OFFICE SPACES</h3>
+
+            <p class="column-description">
+              Explore spaces designed for working.
+            </p>
+
+            <a
+              routerLink="/offices"
+              (click)="closeMenu()"
+            >
+              Explore Offices ↗
             </a>
+
           </div>
 
           <div class="mega-column">
-            <h3>RETAIL</h3>
 
-            <a routerLink="/retail" (click)="closeMenu()">
-              EXPLORE RETAIL
+            <h3>RETAIL SPACES</h3>
+
+            <p class="column-description">
+              Discover commercial spaces for retail.
+            </p>
+
+            <a
+              routerLink="/retail"
+              (click)="closeMenu()"
+            >
+              Explore Retail ↗
             </a>
+
           </div>
 
           <div class="mega-image">
             <div class="mega-placeholder">
-              COMMERCIAL SPACES
+              <span>COMMERCIAL</span>
+              <small>SHIVRAI GROUP</small>
             </div>
           </div>
 
@@ -198,52 +268,81 @@
 
     }
 
-    <!-- ABOUT MEGA MENU -->
+    <!-- ABOUT MENU -->
     @if (activeMenu() === 'about') {
 
-      <div class="mega-menu">
+      <div
+        class="mega-menu"
+        id="about-menu"
+      >
         <div class="mega-menu-content">
 
           <div class="mega-intro">
-            <span class="eyebrow">THE COMPANY</span>
-            <h2>ABOUT</h2>
+
+            <span class="eyebrow">
+              THE COMPANY
+            </span>
+
+            <h2>About Us</h2>
 
             <p>
-              Learn more about Shivrai Group and our work.
+              Discover our approach to
+              development and the spaces we create.
             </p>
 
-            <a routerLink="/about" (click)="closeMenu()">
-              VIEW ALL —
+            <a
+              routerLink="/about"
+              (click)="closeMenu()"
+            >
+              DISCOVER SHIVRAI ↗
             </a>
+
           </div>
 
           <div class="mega-column">
+
             <h3>COMPANY</h3>
 
-            <a routerLink="/about" (click)="closeMenu()">
-              OUR STORY
+            <a
+              routerLink="/about"
+              (click)="closeMenu()"
+            >
+              Our Story
             </a>
 
-            <a routerLink="/projects" (click)="closeMenu()">
-              OUR PROJECTS
+            <a
+              routerLink="/projects"
+              (click)="closeMenu()"
+            >
+              Our Projects
             </a>
+
           </div>
 
           <div class="mega-column">
-            <h3>MORE</h3>
 
-            <a routerLink="/careers" (click)="closeMenu()">
-              CAREERS
+            <h3>CONNECT</h3>
+
+            <a
+              routerLink="/careers"
+              (click)="closeMenu()"
+            >
+              Careers
             </a>
 
-            <a routerLink="/contact" (click)="closeMenu()">
-              CONTACT
+            <a
+              routerLink="/contact"
+              (click)="closeMenu()"
+            >
+              Contact Us
             </a>
+
           </div>
 
           <div class="mega-image">
             <div class="mega-placeholder">
-              ABOUT SHIVRAI
+              <span>OUR STORY</span>
+              <small>SHIVRAI GROUP</small>
             </div>
           </div>
 
@@ -288,6 +387,7 @@
       >
         Contact Enquiries
       </a>
+
       <a
         routerLink="/admin/media"
         routerLinkActive="active"
@@ -295,32 +395,33 @@
         Media Library
       </a>
 
-
     </div>
 
-    
-  <div class="admin-nav-actions">
+    <div class="admin-nav-actions">
 
-    <button
-      type="button"
-      class="theme-toggle"
-      (click)="toggleTheme()"
-      [attr.aria-pressed]="theme() === 'dark'"
-      [attr.aria-label]="theme() === 'light' ? 'Enable dark mode' : 'Enable light mode'"
-    >
-      {{ theme() === 'light' ? '☾ Dark Mode' : '☀ Light Mode' }}
-    </button>
+      <button
+        type="button"
+        class="theme-toggle"
+        (click)="toggleTheme()"
+        [attr.aria-pressed]="theme() === 'dark'"
+        [attr.aria-label]="theme() === 'light'
+          ? 'Enable dark mode'
+          : 'Enable light mode'"
+      >
+        {{ theme() === 'light'
+          ? '☾ Dark Mode'
+          : '☀ Light Mode' }}
+      </button>
 
-    <button
-      type="button"
-      class="logout-btn"
-      (click)="logout()"
-    >
-      Logout
-    </button>
+      <button
+        type="button"
+        class="logout-btn"
+        (click)="logout()"
+      >
+        Logout
+      </button>
 
-  </div>
-
+    </div>
 
   </nav>
 

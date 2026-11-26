@@ -4,7 +4,9 @@ import {
   inject,
   OnInit,
   ChangeDetectorRef,
-  PLATFORM_ID
+  PLATFORM_ID,
+  ElementRef,
+  viewChild
 } from '@angular/core';
 
 import { isPlatformBrowser } from '@angular/common';
@@ -24,11 +26,15 @@ export class ProjectDetails implements OnInit {
   private cdr = inject(ChangeDetectorRef);
   private platformId = inject(PLATFORM_ID);
 
+  // Gallery slider reference
+  readonly galleryTrack =
+    viewChild<ElementRef<HTMLElement>>('galleryTrack');
+
   project: Project | null = null;
   loading = true;
   error = '';
 
-  ngOnInit() {
+  ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
 
     if (!id) {
@@ -43,8 +49,7 @@ export class ProjectDetails implements OnInit {
         this.loading = false;
         this.cdr.detectChanges();
 
-        // Record a view only after the project loads.
-        // Browser-only execution prevents SSR from counting views.
+        // Record views only in the browser
         if (isPlatformBrowser(this.platformId)) {
           this.trackView(id);
         }
@@ -60,14 +65,39 @@ export class ProjectDetails implements OnInit {
     });
   }
 
-  private trackView(projectId: string) {
+  // Gallery navigation
+  scrollGallery(direction: number): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+
+    const track = this.galleryTrack()?.nativeElement;
+
+    if (!track) return;
+
+    const slide = track.querySelector<HTMLElement>(
+      '.gallery-slide'
+    );
+
+    if (!slide) return;
+
+    const gap =
+      parseFloat(getComputedStyle(track).columnGap) || 18;
+
+    const distance = slide.offsetWidth + gap;
+
+    track.scrollBy({
+      left: direction * distance,
+      behavior: 'smooth'
+    });
+  }
+
+  private trackView(projectId: string): void {
     this.projectService.trackProjectView(projectId).subscribe({
       next: () => {
         console.log('Project view recorded:', projectId);
       },
 
       error: (err) => {
-        // Analytics errors must not affect project loading.
+        // Analytics failures must not affect the page
         console.warn(
           'Project view tracking failed:',
           err.status

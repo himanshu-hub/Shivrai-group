@@ -1,9 +1,7 @@
 
 <section class="projects-page">
-
   <h1>Our Projects</h1>
 
-  <!-- SEARCH -->
   <form (ngSubmit)="submitSearch()">
     <input
       type="search"
@@ -17,99 +15,80 @@
 
   @if (loading) {
     <p>Loading projects...</p>
-
   } @else if (error) {
     <p>{{ error }}</p>
-
   } @else if (projects.length === 0) {
     <p>No projects available.</p>
-
   } @else {
     <p>{{ totalProjects }} projects found</p>
 
-    <!-- PROJECT GRID -->
     <div class="projects-grid">
+     
+    @for (project of projects; track project.id) {
+      <article class="project-card">
 
-      @for (project of projects; track project.id) {
-        <article class="project-card">
+        <a
+          [routerLink]="['/projects', project.id]"
+          class="project-image-link"
+        >
+          @if (
+            project.image &&
+            project.image !== 'null' &&
+            project.image.startsWith('http')
+          ) {
+            <img
+              [src]="project.image"
+              [alt]="project.name"
+              class="project-cover"
+              loading="lazy"
+            />
+          } @else {
+            <div class="project-image-placeholder">
+              Image Coming Soon
+            </div>
+          }
+        </a>
 
-          <!-- COVER IMAGE -->
-          <a
-            [routerLink]="['/projects', project.id]"
-            class="project-image-link"
-          >
-            @if (
-              project.image &&
-              project.image !== 'null' &&
-              project.image.startsWith('http')
-            ) {
-              <img
-                [src]="project.image"
-                [alt]="project.name"
-                class="project-cover"
-                loading="lazy"
-              />
-            } @else {
-              <div class="project-image-placeholder">
-                Image Coming Soon
-              </div>
-            }
+        <div class="project-card-content">
+          <span class="project-status">
+            {{ project.status }}
+          </span>
+
+          <h2>{{ project.name }}</h2>
+          <p>{{ project.location }}</p>
+          <p>{{ project.category }}</p>
+
+          <p class="project-description">
+            {{ project.description }}
+          </p>
+
+          <a [routerLink]="['/projects', project.id]">
+            View Details →
           </a>
+        </div>
 
-          <!-- PROJECT INFORMATION -->
-          <div class="project-card-content">
+      </article>
+    }
 
-            <span class="project-status">
-              {{ project.status }}
-            </span>
-
-            <h2>{{ project.name }}</h2>
-
-            <p>{{ project.location }}</p>
-
-            <p>{{ project.category }}</p>
-
-            <p class="project-description">
-              {{ project.description }}
-            </p>
-
-            <a [routerLink]="['/projects', project.id]">
-              View Details →
-            </a>
-
-          </div>
-
-        </article>
-      }
-
-    </div>
   }
 
-  <!-- PAGINATION -->
   @if (!loading && !error && totalPages > 1) {
     <div class="pagination">
-
       <button
         type="button"
         (click)="changePage(currentPage - 1)"
-        [disabled]="currentPage === 1"
-      >
+        [disabled]="currentPage === 1">
         Previous
       </button>
 
-      <span>
-        Page {{ currentPage }} of {{ totalPages }}
-      </span>
+      <span>Page {{ currentPage }} of {{ totalPages }}</span>
 
       <button
         type="button"
         (click)="changePage(currentPage + 1)"
-        [disabled]="currentPage === totalPages"
-      >
+        [disabled]="currentPage === totalPages">
         Next
       </button>
-
     </div>
   }
-
 </section>

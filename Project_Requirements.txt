@@ -1,0 +1,924 @@
+
+============================================================
+SHIVRAI GROUP
+FULL-STACK WEBSITE — PROJECT REQUIREMENTS
+============================================================
+
+PROJECT STATUS: ACTIVE DEVELOPMENT
+FRONTEND: ANGULAR 22
+BACKEND: FASTAPI (PYTHON)
+DATABASE: MONGODB
+MEDIA STORAGE: CLOUDINARY
+AUTHENTICATION: JWT
+VERSION CONTROL: GIT / GITHUB
+PRIMARY BRANCH: main
+
+LATEST CONFIRMED COMMIT:
+b1ebc45
+
+============================================================
+1. PROJECT OBJECTIVE
+============================================================
+
+Develop a modern, responsive real estate website for
+Shivrai Group with a fully functional administration panel.
+
+The platform must allow:
+
+1. Visitors to explore real estate developments.
+2. Visitors to view individual project information.
+3. Visitors to browse project images and galleries.
+4. Visitors to submit enquiries.
+5. Administrators to manage project information.
+6. Administrators to upload and organize media.
+7. Administrators to manage customer enquiries.
+8. Administrators to monitor project views.
+9. Website content to be maintained through the backend.
+
+The final website should have a premium architectural
+visual identity, responsive layouts, and reliable APIs.
+
+============================================================
+2. TECHNOLOGY REQUIREMENTS
+============================================================
+
+FRONTEND:
+- Angular 22
+- TypeScript
+- HTML
+- SCSS
+- Angular Router
+- Angular HttpClient
+- Angular Forms
+- Standalone Angular Components
+
+BACKEND:
+- Python
+- FastAPI
+- Pydantic
+- PyMongo
+- JWT authentication
+- Password hashing
+- Environment-based configuration
+
+DATABASE:
+- MongoDB
+- Project collection
+- Contact enquiry collection
+- Media records or metadata as implemented
+
+IMAGE MANAGEMENT:
+- Cloudinary
+- Hosted image URLs
+- Image public IDs
+- Multiple-image galleries
+
+DEVELOPMENT ENVIRONMENT:
+- Windows PowerShell
+- Node.js / npm
+- Python virtual environment
+- Git / GitHub
+
+============================================================
+3. PUBLIC WEBSITE REQUIREMENTS
+============================================================
+
+3.1 HOME PAGE
+
+Required sections:
+
+- Website navigation header
+- Full-width architectural hero
+- Company introduction
+- Featured developments
+- Residential developments
+- Commercial developments
+- Company philosophy or statement
+- Contact call-to-action
+
+DESIGN REQUIREMENTS:
+
+- Premium real estate aesthetics
+- Architectural photography
+- Minimal typography
+- Spacious layouts
+- Responsive design
+- Subtle animations and hover effects
+- Clear navigation
+- Optimized images
+
+CURRENT IMPLEMENTATION:
+
+A static architectural homepage layout has been developed.
+
+FUTURE REQUIREMENT:
+
+Replace placeholder images with approved Shivrai Group
+project photographs.
+
+Consider connecting featured developments to actual
+backend project records.
+
+------------------------------------------------------------
+3.2 HEADER AND NAVIGATION
+------------------------------------------------------------
+
+Public header navigation:
+
+HOME
+PROJECTS
+COMMERCIAL
+ABOUT
+CAREERS
+CONTACT US
+
+COMMERCIAL DROPDOWN:
+
+- Offices
+- Retail
+- All Commercial Projects
+
+PROJECTS DROPDOWN:
+
+- View All Projects
+- Ongoing Projects
+- Upcoming Projects
+- Completed Projects
+- Residential
+- Commercial
+
+ABOUT DROPDOWN:
+
+- Our Story
+- Our Projects
+- Careers
+- Contact
+
+BEHAVIOUR REQUIREMENTS:
+
+- Dropdowns must open on click.
+- Dropdowns must not automatically open on hover.
+- Clicking the active dropdown should close it.
+- Selecting a menu link should close the dropdown.
+- Navigation must work on desktop and mobile.
+- Keyboard accessibility should be supported.
+
+VISUAL REQUIREMENTS:
+
+- Warm ivory header background
+- Muted taupe and bronze accents
+- Subtle borders
+- Refined typography
+- Distinct from the green website colour palette
+- Highlighted View All buttons
+
+------------------------------------------------------------
+3.3 PROJECTS LISTING PAGE
+------------------------------------------------------------
+
+FUNCTIONAL REQUIREMENTS:
+
+- Retrieve projects from FastAPI.
+- Display project cards.
+- Display cover images.
+- Display project names.
+- Display locations.
+- Display categories.
+- Display project statuses.
+- Display project descriptions.
+- Navigate to individual project pages.
+
+SEARCH REQUIREMENTS:
+
+- Search projects by name or supported search fields.
+- Display matching results.
+- Show a message when no projects are found.
+
+PAGINATION REQUIREMENTS:
+
+- Maximum 6 projects per page.
+- Desktop layout: 3 columns x 2 rows.
+- Previous page button.
+- Next page button.
+- Current page indicator.
+
+FILTERING REQUIREMENTS:
+
+- Project status
+- Project category
+
+SUPPORTED STATUSES:
+
+- Ongoing
+- Upcoming
+- Completed
+
+SUPPORTED CATEGORIES:
+
+- Residential
+- Commercial
+- Retail
+- Offices
+
+NOTE:
+
+The header combines Offices and Retail under Commercial
+for navigation. Existing backend categories should not be
+deleted or changed without checking stored records.
+
+VISUAL REQUIREMENTS:
+
+- Consistent card dimensions
+- Properly cropped project images
+- Responsive grid
+- No horizontal overflow
+- Clean typography
+- Premium hover interactions
+
+------------------------------------------------------------
+3.4 PROJECT DETAILS PAGE
+------------------------------------------------------------
+
+Each project should have a dedicated details page.
+
+REQUIRED CONTENT:
+
+- Project name
+- Project location
+- Project status
+- Project category
+- Main cover image
+- Detailed description
+- Project information panel
+- Project image gallery
+- Contact enquiry CTA
+- Back to Projects navigation
+
+IMAGE GALLERY:
+
+- Horizontal slider
+- Previous button
+- Next button
+- Smooth scrolling
+- 3 visible images on desktop
+- 2 visible images on tablet
+- 1 visible image on mobile
+- Support multiple Cloudinary images
+- Allow opening original images
+
+FUTURE ENHANCEMENTS:
+
+- Full-screen lightbox
+- Image zoom
+- Image counters
+- Keyboard navigation
+- Touch/swipe optimization
+
+ANALYTICS:
+
+- Record a view when a project is opened.
+- View tracking must happen in the browser.
+- Server-side rendering must not create artificial views.
+- Analytics failures must not interrupt project loading.
+
+------------------------------------------------------------
+3.5 CONTACT PAGE
+------------------------------------------------------------
+
+FORM FIELDS:
+
+1. Full name
+2. Email address
+3. Phone number
+4. Subject (optional)
+5. Message
+
+VALIDATION:
+
+- Name: minimum 2 characters
+- Email: valid email format
+- Phone: 10–15 digits, optional leading +
+- Message: required
+- Subject: optional
+
+SUBMISSION PROCESS:
+
+1. Validate form.
+2. Disable button during submission.
+3. Send data to backend.
+4. Store enquiry in MongoDB.
+5. Display success confirmation.
+6. Show redirect message.
+7. Wait 3 seconds.
+8. Redirect to homepage.
+
+ERROR HANDLING:
+
+- Display submission errors.
+- Do not redirect on failure.
+- Prevent duplicate submissions.
+
+------------------------------------------------------------
+3.6 OTHER PUBLIC PAGES
+------------------------------------------------------------
+
+PAGES TO REVIEW OR DEVELOP:
+
+ABOUT:
+- Company introduction
+- Company history
+- Philosophy
+- Vision and mission
+- Development approach
+
+OFFICES:
+- Commercial office projects
+- Relevant property information
+- Enquiry CTA
+
+RETAIL:
+- Retail developments
+- Project information
+- Enquiry CTA
+
+CAREERS:
+- Company career information
+- Vacancy listing if required
+- Application process
+
+These pages should follow a consistent design system.
+
+Their implementation status must be verified in the
+repository before further development.
+
+============================================================
+4. ADMIN DASHBOARD REQUIREMENTS
+============================================================
+
+4.1 ADMIN AUTHENTICATION
+
+- Secure administrator login
+- JWT access tokens
+- Password hashing
+- Protected API endpoints
+- Logout functionality
+- Authenticated admin navigation
+
+SECURITY:
+
+- Do not store plaintext admin passwords.
+- Do not expose JWT secrets.
+- Validate authorization server-side.
+- Prevent unauthorized project modification.
+
+------------------------------------------------------------
+4.2 ADMIN DASHBOARD
+------------------------------------------------------------
+
+Dashboard should display relevant statistics:
+
+- Total projects
+- Project status information
+- Contact enquiries
+- Media count
+- Most-viewed projects
+- Project analytics
+
+Provide navigation to:
+
+- Manage Projects
+- Contact Enquiries
+- Media Library
+
+------------------------------------------------------------
+4.3 PROJECT MANAGEMENT
+------------------------------------------------------------
+
+ADMINISTRATORS MUST BE ABLE TO:
+
+- Create projects
+- View projects
+- Edit projects
+- Delete projects
+- Set project name
+- Set project status
+- Set project category
+- Set location
+- Enter project description
+- Assign cover image
+- Assign multiple gallery images
+
+PROJECT FIELDS:
+
+id
+name
+status
+category
+location
+description
+image
+image_public_id
+gallery
+gallery_assets
+total_views
+daily_views
+
+Use backend validation and consistent response models.
+
+------------------------------------------------------------
+4.4 MEDIA LIBRARY
+------------------------------------------------------------
+
+MEDIA REQUIREMENTS:
+
+- Cloudinary integration
+- Image upload
+- Image selection
+- Image preview
+- Multiple image selection
+- Cover image assignment
+- Gallery image assignment
+- Gallery image reordering
+- Image crop editor
+- Creation of cropped image variants
+- Identification of unused media
+- Deletion of eligible unused images
+
+IMPORTANT:
+
+Do not delete Cloudinary images still referenced by
+projects.
+
+Image URLs and public IDs must remain synchronized.
+
+------------------------------------------------------------
+4.5 CONTACT ENQUIRY MANAGEMENT
+------------------------------------------------------------
+
+ADMINISTRATORS SHOULD BE ABLE TO:
+
+- View enquiries
+- Read enquiry details
+- Update enquiry status
+- Organize enquiries
+- Identify pending enquiries
+
+CONTACT RECORD FIELDS:
+
+name
+email
+phone
+subject
+message
+status
+created_at
+
+Default status:
+
+Pending
+
+All administrative enquiry APIs must be protected.
+
+------------------------------------------------------------
+4.6 ANALYTICS
+------------------------------------------------------------
+
+Project analytics requirements:
+
+- Track project views
+- Store total views
+- Maintain daily view statistics
+- Display most-viewed projects
+- Avoid counting SSR requests
+- Keep analytics errors separate from page errors
+
+Future enhancements may include:
+
+- Analytics date ranges
+- Dashboard charts
+- Project comparison
+- Visitor statistics
+
+============================================================
+5. BACKEND REQUIREMENTS
+============================================================
+
+BACKEND FRAMEWORK:
+
+FastAPI
+
+DATABASE:
+
+MongoDB using PyMongo
+
+CORE API GROUPS:
+
+AUTHENTICATION:
+POST /auth/login
+
+PROJECTS:
+GET    /projects
+GET    /projects/{id}
+POST   /projects
+PUT    /projects/{id}
+DELETE /projects/{id}
+
+PROJECT VIEWS:
+POST /projects/{id}/view
+
+CONTACT:
+POST /contact
+
+Protected contact management endpoints are implemented.
+
+Media management endpoints are also implemented.
+
+IMPORTANT:
+
+Verify exact HTTP methods, paths, and request schemas
+using the backend source and FastAPI Swagger UI.
+
+------------------------------------------------------------
+5.1 PROJECT API REQUIREMENTS
+------------------------------------------------------------
+
+- Project listing
+- Project details
+- Project creation
+- Project updates
+- Project deletion
+- Search
+- Sorting
+- Filtering
+- Pagination
+- Image references
+- View tracking
+
+Validation must be enforced by the backend.
+
+------------------------------------------------------------
+5.2 CONTACT API REQUIREMENTS
+------------------------------------------------------------
+
+- Public enquiry submission
+- Required-field validation
+- MongoDB storage
+- Administrative enquiry retrieval
+- Administrative status updates
+- Proper error handling
+
+------------------------------------------------------------
+5.3 AUTHENTICATION REQUIREMENTS
+------------------------------------------------------------
+
+- JWT bearer authentication
+- Secure admin credentials
+- Protected management APIs
+- Password hashing
+- Token expiration
+- Environment-based secrets
+
+------------------------------------------------------------
+5.4 DATABASE REQUIREMENTS
+------------------------------------------------------------
+
+Database collections include:
+
+projects
+contacts
+
+Existing indexes include project search/filter fields
+and contact management fields.
+
+Preserve current indexes and data compatibility.
+
+Do not perform destructive database changes without
+reviewing and backing up the data.
+
+------------------------------------------------------------
+5.5 BACKEND ERROR HANDLING
+------------------------------------------------------------
+
+The backend must:
+
+- Return appropriate HTTP status codes.
+- Validate incoming request data.
+- Handle MongoDB failures.
+- Handle Cloudinary failures.
+- Avoid exposing internal secrets.
+- Return consistent error responses.
+- Protect administrative operations.
+
+============================================================
+6. ENVIRONMENT CONFIGURATION
+============================================================
+
+BACKEND REQUIRES:
+
+- MongoDB connection configuration
+- JWT secret
+- Admin username
+- Admin password hash
+- Cloudinary credentials
+- CORS configuration
+
+KNOWN AUTHENTICATION VARIABLES:
+
+ADMIN_USERNAME
+ADMIN_PASSWORD_HASH
+JWT_SECRET_KEY
+
+Check backend source for the exact MongoDB and
+Cloudinary environment variable names.
+
+FRONTEND REQUIRES:
+
+- Correct backend API URL
+- HTTP service configuration
+- Route configuration
+- Production environment configuration
+
+SECURITY REQUIREMENTS:
+
+- Never commit .env files
+- Never expose API secrets
+- Never commit credentials
+- Use environment variables
+- Keep production and development settings separate
+
+============================================================
+7. DESIGN SYSTEM REQUIREMENTS
+============================================================
+
+PUBLIC WEBSITE:
+
+Primary visual direction:
+Premium modern real estate and architecture.
+
+MAIN CONTENT COLOURS:
+
+- Warm off-white
+- Cream
+- Muted green
+- Dark forest green
+- Neutral grey
+
+HEADER COLOURS:
+
+- Warm ivory
+- Taupe
+- Muted bronze
+- Dark brown
+
+DESIGN PRINCIPLES:
+
+- Minimal layouts
+- Consistent spacing
+- Refined typography
+- Clear hierarchy
+- High-quality architectural photography
+- Responsive grids
+- Consistent buttons
+- Subtle hover effects
+- Accessible contrast
+- Minimal visual clutter
+
+ADMIN INTERFACE:
+
+- Functional layouts
+- Clear forms
+- Consistent navigation
+- Dashboard statistics
+- Dark and light themes
+
+============================================================
+8. RESPONSIVENESS
+============================================================
+
+The entire website must support:
+
+- Desktop
+- Laptop
+- Tablet
+- Mobile
+
+REQUIREMENTS:
+
+- Responsive header
+- Responsive project grid
+- Responsive project details
+- Responsive gallery
+- Responsive forms
+- Responsive admin panel
+- No horizontal scrolling from layout overflow
+- Properly scaled images
+- Touch-friendly navigation
+
+============================================================
+9. PERFORMANCE REQUIREMENTS
+============================================================
+
+- Lazy-load noncritical images.
+- Optimize Cloudinary image delivery.
+- Avoid oversized image downloads.
+- Minimize unnecessary API requests.
+- Implement loading indicators.
+- Handle empty states.
+- Prevent layout shifts.
+- Avoid unnecessary frontend re-renders.
+- Keep Angular components maintainable.
+
+============================================================
+10. SECURITY REQUIREMENTS
+============================================================
+
+- JWT-protected admin APIs
+- Secure password hashing
+- Input validation
+- Proper CORS configuration
+- Secure environment variables
+- Safe image upload handling
+- Protected delete operations
+- No hardcoded credentials
+- HTTPS in production
+- Secure error reporting
+
+============================================================
+11. CURRENT DEVELOPMENT STATUS
+============================================================
+
+IMPLEMENTED OR PREVIOUSLY DEVELOPED:
+
+[✓] Angular frontend structure
+[✓] FastAPI backend
+[✓] MongoDB integration
+[✓] JWT admin authentication
+[✓] Public homepage design
+[✓] Public navigation
+[✓] Click-controlled dropdown menus
+[✓] Project listing
+[✓] Project search
+[✓] Project pagination
+[✓] Project details
+[✓] Project cover images
+[✓] Project gallery
+[✓] Gallery slider controls
+[✓] Contact enquiry form
+[✓] Contact success and redirect flow
+[✓] Admin dashboard
+[✓] Project CRUD
+[✓] Media library
+[✓] Cloudinary integration
+[✓] Image cropping
+[✓] Gallery image management
+[✓] Contact enquiry management
+[✓] Project view tracking
+[✓] Admin theme toggle
+
+NOTE:
+
+These reflect development progress from the handover.
+The next developer must test functionality against the
+latest repository before treating it as production-ready.
+
+============================================================
+12. REMAINING DEVELOPMENT WORK
+============================================================
+
+HIGH PRIORITY:
+
+[ ] Verify all public routes
+[ ] Verify project category filters from URL parameters
+[ ] Replace placeholder homepage photographs
+[ ] Verify project pagination uses 6 items
+[ ] Review mobile navigation
+[ ] Test admin authentication
+[ ] Test all project CRUD operations
+[ ] Test media uploads and gallery management
+[ ] Test enquiry submission and redirect
+[ ] Validate backend/frontend integration
+
+MEDIUM PRIORITY:
+
+[ ] Improve the About page
+[ ] Review Offices page
+[ ] Review Retail page
+[ ] Review Careers page
+[ ] Connect featured homepage projects dynamically
+[ ] Implement gallery lightbox
+[ ] Improve image loading states
+[ ] Add SEO metadata
+[ ] Improve accessibility
+[ ] Review error handling and empty states
+
+PRODUCTION REQUIREMENTS:
+
+[ ] Production backend configuration
+[ ] Production database configuration
+[ ] Production frontend build
+[ ] HTTPS
+[ ] Environment secret management
+[ ] Security review
+[ ] CORS review
+[ ] Database backup strategy
+[ ] Image storage review
+[ ] Performance testing
+[ ] Mobile testing
+[ ] Deployment verification
+
+============================================================
+13. DEVELOPMENT WORKFLOW
+============================================================
+
+GIT REPOSITORY:
+shivrai-group
+
+PRIMARY BRANCH:
+main
+
+LATEST CONFIRMED COMMIT:
+b1ebc45
+
+WORKFLOW:
+
+1. Pull the latest code.
+2. Inspect existing functionality.
+3. Make required modifications.
+4. Test affected functionality.
+5. Review Git changes.
+6. Commit with a descriptive message.
+7. Push changes to main.
+
+COMMANDS:
+
+git switch main
+git pull origin main
+
+git status
+git diff
+
+git add .
+git commit -m "Describe the update"
+git push origin main
+
+NOTE:
+
+Coordinate changes before pushing when multiple
+developers are working on the same branch.
+
+Do not commit environment files or secrets.
+
+============================================================
+14. DEVELOPER INSTRUCTIONS
+============================================================
+
+IMPORTANT RULES:
+
+1. Do not rebuild already working features.
+
+2. Read existing components before modifying them.
+
+3. Preserve Angular service integrations.
+
+4. Preserve existing backend APIs unless changes are
+   necessary and documented.
+
+5. Preserve MongoDB schema compatibility.
+
+6. Preserve Cloudinary image references.
+
+7. Keep admin routes secure.
+
+8. Avoid breaking server-side rendering.
+
+9. Maintain responsive layouts.
+
+10. Use reusable and maintainable components.
+
+11. Test changes before committing.
+
+12. Keep the README and requirements documentation
+    updated as development progresses.
+
+============================================================
+15. FINAL PROJECT GOAL
+============================================================
+
+Deliver a production-ready real estate platform with:
+
+- Premium responsive public website
+- Functional project directory
+- Rich project detail pages
+- Efficient image management
+- Reliable enquiry system
+- Secure administration dashboard
+- Project analytics
+- Consistent design system
+- Stable backend APIs
+- Maintainable architecture
+- Secure deployment
+
+============================================================
+END OF PROJECT REQUIREMENTS
+SHIVRAI GROUP
+============================================================
